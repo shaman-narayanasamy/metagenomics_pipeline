@@ -1,0 +1,18 @@
+---
+tmp_dir: "/ibex/user/naras0c/tmp"
+output_dir: "/ibex/scratch/projects/c2188/soil_experiment"
+data_table: "/ibex/scratch/projects/c2188/soil_experiment/public_datasets/metadata/input_table.tsv"
+input_dir:
+  mg_assembly_input: "/ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/"
+
+trimmomatic:
+    adapters_path: "/ibex/user/naras0c/airport_surveillance/adapters.fa"
+
+sortmerna:
+    db_path: "/ibex/user/naras0c/sortmerna"
+    filter_length: 20
+    contaminant_fasta_path: "/ibex/user/naras0c/genomes/cabbage/ncbi_dataset/data/GCF_000695525.1/GCF_000695525.1_BOL_genomic.fna"
+    contamination_name: "cabbage_genome"
+
+salmon:
+    min_assigned_frags: 1

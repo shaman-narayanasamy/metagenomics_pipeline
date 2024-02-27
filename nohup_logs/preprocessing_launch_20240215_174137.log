@@ -1,0 +1,111 @@
+nohup: ignoring input
+Loading module for Snakemake
+Snakemake 7.32.3 is now loaded
+No dry-run
+snakemake -rp --configfile config/config.yml --conda-prefix /ibex/user/naras0c/conda-environments/ --use-conda --conda-frontend mamba --jobs 200 --cluster-config config/ibex_cluster_config.yml --cluster "sbatch -p {cluster.partition} -N {cluster.nodes} -n {cluster.ntasks} -c {cluster.ncpus} -t {cluster.time} --mem {cluster.mem_gb} --mail-user {cluster.mail-user} --job-name {cluster.job-name} --output {cluster.stdout}" --cluster-cancel scancel --notemp -s workflows/metagenomics/preprocessing.smk
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 200
+Job stats:
+job                        count
+-----------------------  -------
+all                            1
+sortmerna_filter_paired        1
+sortmerna_filter_single        1
+trimmomatic_trimming           1
+total                          4
+
+Select jobs to execute...
+
+[Thu Feb 15 17:41:43 2024]
+rule trimmomatic_trimming:
+    input: /ibex/user/naras0c/ww_public_datasets/input/ftp.sra.ebi.ac.uk/vol1/fastq/ERR135/002/ERR1356692/ERR1356692_1.fastq.gz, /ibex/user/naras0c/ww_public_datasets/input/ftp.sra.ebi.ac.uk/vol1/fastq/ERR135/002/ERR1356692/ERR1356692_2.fastq.gz
+    output: U1/U1_R1.processed.fastq.gz, U1/U1_R2.processed.fastq.gz, U1/U1_R1.unpaired.processed.fastq.gz, U1/U1_R2.unpaired.processed.fastq.gz, U1/U1_SE.processed.fastq.gz
+    jobid: 7
+    benchmark: /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/U1/benchmarks/preprocessing_trimming.txt
+    reason: Missing output files: U1/U1_SE.processed.fastq.gz, U1/U1_R1.processed.fastq.gz, U1/U1_R2.processed.fastq.gz
+    wildcards: sample=U1
+    resources: mem_mb=4589, mem_mib=4377, disk_mb=4589, disk_mib=4377, tmpdir=<TBD>, cpus_per_task=12, runtime=2880
+
+ 
+        trimmomatic PE -phred33             -threads 12             /ibex/user/naras0c/ww_public_datasets/input/ftp.sra.ebi.ac.uk/vol1/fastq/ERR135/002/ERR1356692/ERR1356692_1.fastq.gz /ibex/user/naras0c/ww_public_datasets/input/ftp.sra.ebi.ac.uk/vol1/fastq/ERR135/002/ERR1356692/ERR1356692_2.fastq.gz             U1/U1_R1.processed.fastq.gz U1/U1_R1.unpaired.processed.fastq.gz             U1/U1_R2.processed.fastq.gz U1/U1_R2.unpaired.processed.fastq.gz             ILLUMINACLIP:/ibex/user/naras0c/airport_surveillance/adapters.fa:2:30:10             LEADING:3             TRAILING:3             SLIDINGWINDOW:4:15             MINLEN:36 
+
+        # Check if the unpaired files exist and are non-empty
+        if [[ -s U1/U1_R1.unpaired.processed.fastq.gz && -s U1/U1_R2.unpaired.processed.fastq.gz ]]; then
+            zcat U1/U1_R1.unpaired.processed.fastq.gz U1/U1_R2.unpaired.processed.fastq.gz | gzip > U1/U1_SE.processed.fastq.gz
+        else
+            touch U1/U1_SE.processed.fastq.gz
+        fi
+        
+Submitted job 7 with external jobid 'Submitted batch job 32351017'.
+[Thu Feb 15 17:57:44 2024]
+Finished job 7.
+1 of 4 steps (25%) done
+Select jobs to execute...
+
+[Thu Feb 15 17:57:44 2024]
+rule sortmerna_filter_paired:
+    input: U1/U1_R1.processed.fastq.gz, U1/U1_R2.processed.fastq.gz, /ibex/user/naras0c/sortmerna/cabbage_genome_minlength-20.fasta, /ibex/user/naras0c/sortmerna/cabbage_genome_minlength-20.done
+    output: U1/U1_R1.processed.filtered.fastq.gz, U1/U1_R2.processed.filtered.fastq.gz, U1/U1_unpaired_R1.processed.filtered.fastq.gz, U1/U1_unpaired_R2.processed.filtered.fastq.gz
+    jobid: 8
+    benchmark: U1/benchmarks/preprocessing_filtering_paired.txt
+    reason: Missing output files: U1/U1_unpaired_R1.processed.filtered.fastq.gz, U1/U1_R1.processed.filtered.fastq.gz, U1/U1_R2.processed.filtered.fastq.gz, U1/U1_unpaired_R2.processed.filtered.fastq.gz; Input files updated by another job: U1/U1_R1.processed.fastq.gz, U1/U1_R2.processed.fastq.gz
+    wildcards: sample=U1
+    resources: mem_mb=4694, mem_mib=4477, disk_mb=4694, disk_mib=4477, tmpdir=<TBD>, cpus_per_task=24, runtime=4320
+
+ 
+        # Run SortMeRNA for paired-end reads
+        sortmerna                   --workdir /tmp/U1/U1_paired_sortmerna_workdir                   --ref /ibex/user/naras0c/sortmerna/cabbage_genome_minlength-20.fasta                   --idx-dir /ibex/user/naras0c/sortmerna/idx                   --reads U1/U1_R1.processed.fastq.gz                   --reads U1/U1_R2.processed.fastq.gz                   --threads 24                   --other /tmp/U1/U1_paired.non_contaminant                   --fastx                   --out2                   --sout
+
+        # Since SortMeRNA appends _1 and _2 to the file names for paired reads, 
+        # and automatically adds .fastq extension, we can just move them directly.
+        mv /tmp/U1/U1_paired.non_contaminant_paired_fwd.fq.gz U1/U1_R1.processed.filtered.fastq.gz
+        mv /tmp/U1/U1_paired.non_contaminant_paired_rev.fq.gz U1/U1_R2.processed.filtered.fastq.gz
+        mv /tmp/U1/U1_paired.non_contaminant_singleton_fwd.fq.gz U1/U1_unpaired_R1.processed.filtered.fastq.gz
+        mv /tmp/U1/U1_paired.non_contaminant_singleton_rev.fq.gz U1/U1_unpaired_R2.processed.filtered.fastq.gz
+        
+Submitted job 8 with external jobid 'Submitted batch job 32351259'.
+[Thu Feb 15 21:04:16 2024]
+Finished job 8.
+2 of 4 steps (50%) done
+Select jobs to execute...
+
+[Thu Feb 15 21:04:16 2024]
+rule sortmerna_filter_single:
+    input: U1/U1_SE.processed.fastq.gz, U1/U1_unpaired_R1.processed.filtered.fastq.gz, U1/U1_unpaired_R2.processed.filtered.fastq.gz, /ibex/user/naras0c/sortmerna/cabbage_genome_minlength-20.fasta, /ibex/user/naras0c/sortmerna/cabbage_genome_minlength-20.done
+    output: U1/U1_SE.processed.filtered.fastq.gz
+    log: U1/logs/preprocessing_filtering_single.txt
+    jobid: 6
+    benchmark: U1/benchmarks/preprocessing_filtering_single.txt
+    reason: Missing output files: U1/U1_SE.processed.filtered.fastq.gz; Input files updated by another job: U1/U1_SE.processed.fastq.gz, U1/U1_unpaired_R1.processed.filtered.fastq.gz, U1/U1_unpaired_R2.processed.filtered.fastq.gz
+    wildcards: sample=U1
+    resources: mem_mb=1208, mem_mib=1153, disk_mb=1208, disk_mib=1153, tmpdir=<TBD>, cpus_per_task=12, runtime=2880
+
+
+        # Check if file is empty
+        if [[ -s U1/U1_SE.processed.fastq.gz ]]; then
+            # Run SortMeRNA for unpaired reads
+            sortmerna                       --workdir /tmp/U1/U1_unpaired_sortmerna_workdir                       --ref /ibex/user/naras0c/sortmerna/cabbage_genome_minlength-20.fasta                       --idx-dir /ibex/user/naras0c/sortmerna/idx                       --reads U1/U1_SE.processed.fastq.gz                       --threads 12                       --other /tmp/U1/U1_SE.non_contaminant                       --fastx
+
+            zcat /tmp/U1/U1_SE.non_contaminant.fq.gz                  U1/U1_unpaired_R1.processed.filtered.fastq.gz                  U1/U1_unpaired_R2.processed.filtered.fastq.gz | gzip >                  U1/U1_SE.processed.filtered.fastq.gz
+        else
+            touch U1/U1_SE.processed.filtered.fastq.gz
+        fi
+        
+Submitted job 6 with external jobid 'Submitted batch job 32351541'.
+[Thu Feb 15 21:38:09 2024]
+Finished job 6.
+3 of 4 steps (75%) done
+Select jobs to execute...
+
+[Thu Feb 15 21:38:09 2024]
+localrule all:
+    input: test_sample/test_sample_SE.processed.filtered.fastq.gz, U1/U1_SE.processed.filtered.fastq.gz, test_sample/test_sample_R1.processed.filtered.fastq.gz, U1/U1_R1.processed.filtered.fastq.gz, test_sample/test_sample_R2.processed.filtered.fastq.gz, U1/U1_R2.processed.filtered.fastq.gz
+    jobid: 0
+    reason: Input files updated by another job: U1/U1_R1.processed.filtered.fastq.gz, U1/U1_SE.processed.filtered.fastq.gz, U1/U1_R2.processed.filtered.fastq.gz
+    resources: mem_mb=4659, mem_mib=4444, disk_mb=4659, disk_mib=4444, tmpdir=/tmp
+
+[Thu Feb 15 21:38:09 2024]
+Finished job 0.
+4 of 4 steps (100%) done
+Complete log: ../../../../../../../home/naras0c/repositories/github/soil_experiment/.snakemake/log/2024-02-15T174138.177392.snakemake.log

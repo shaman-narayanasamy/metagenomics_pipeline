@@ -1,0 +1,60 @@
+nohup: ignoring input
+Loading module for Snakemake
+Snakemake 7.32.3 is now loaded
+No dry-run
+snakemake -rp --configfile config/config.yml --conda-prefix /ibex/user/naras0c/conda-environments/ --use-conda --conda-frontend mamba --jobs 200 --cluster-config config/ibex_cluster_config.yml --cluster "sbatch -p {cluster.partition} -N {cluster.nodes} -n {cluster.ntasks} -c {cluster.ncpus} -t {cluster.time} --mem {cluster.mem_gb} --mail-user {cluster.mail-user} --job-name {cluster.job-name} --output {cluster.stdout}" --cluster-cancel scancel --notemp -s workflows/metagenomics/assembly.smk
+Building DAG of jobs...
+Creating conda environment /home/naras0c/repositories/github/soil_experiment/rules/metagenomics/assembly/../../../envs/megahit_env.yml...
+Downloading and installing remote packages.
+Environment for /home/naras0c/repositories/github/soil_experiment/rules/metagenomics/assembly/../../../envs/megahit_env.yml created (location: ../../../../../../../user/naras0c/conda-environments/37fb5a5d1d484d4d2ba6443b149cdb4a_)
+Creating conda environment /home/naras0c/repositories/github/soil_experiment/rules/metagenomics/assembly/../../../envs/bwa_env.yml...
+Downloading and installing remote packages.
+Environment for /home/naras0c/repositories/github/soil_experiment/rules/metagenomics/assembly/../../../envs/bwa_env.yml created (location: ../../../../../../../user/naras0c/conda-environments/46922aebcee4595885748de9f1235686_)
+Using shell: /usr/bin/bash
+Provided cluster nodes: 200
+Job stats:
+job                        count
+-----------------------  -------
+all                            1
+bwa_index_assembly             1
+bwa_mapping_on_assembly        1
+flagstat_assembly_bam          1
+megahit                        1
+total                          5
+
+Select jobs to execute...
+
+[Thu Feb 15 09:35:57 2024]
+rule megahit:
+    input: /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_R1.processed.filtered.fastq.gz, /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_R2.processed.filtered.fastq.gz, /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_SE.processed.filtered.fastq.gz
+    output: test_sample/megahit_assembly/contigs.fa
+    log: /ibex/scratch/projects/c2188/airport_surveillance/assembly_output/assembly/metatranscriptomics/test_sample/logs/assembly.txt
+    jobid: 1
+    benchmark: /ibex/scratch/projects/c2188/airport_surveillance/assembly_output/assembly/metatranscriptomics/test_sample/benchmarks/assembly.txt
+    reason: Missing output files: test_sample/megahit_assembly/contigs.fa
+    wildcards: sample=test_sample
+    threads: 24
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, cpus_per_task=24, runtime=2880
+
+
+       megahit -1 /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_R1.processed.filtered.fastq.gz -2 /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_R2.processed.filtered.fastq.gz        -r /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_SE.processed.filtered.fastq.gz        -o test_sample/megahit_assembly
+       
+Submitted job 1 with external jobid 'Submitted batch job 32340850'.
+[Thu Feb 15 09:36:17 2024]
+Error in rule megahit:
+    jobid: 1
+    input: /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_R1.processed.filtered.fastq.gz, /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_R2.processed.filtered.fastq.gz, /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_SE.processed.filtered.fastq.gz
+    output: test_sample/megahit_assembly/contigs.fa
+    log: /ibex/scratch/projects/c2188/airport_surveillance/assembly_output/assembly/metatranscriptomics/test_sample/logs/assembly.txt (check log file(s) for error details)
+    conda-env: /ibex/user/naras0c/conda-environments/37fb5a5d1d484d4d2ba6443b149cdb4a_
+    shell:
+        
+       megahit -1 /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_R1.processed.filtered.fastq.gz -2 /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_R2.processed.filtered.fastq.gz        -r /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/test_sample_SE.processed.filtered.fastq.gz        -o test_sample/megahit_assembly
+       
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: Submitted batch job 32340850
+
+Error executing rule megahit on cluster (jobid: 1, external: Submitted batch job 32340850, jobscript: /ibex/scratch/projects/c2188/airport_surveillance/assembly_output/assembly/metatranscriptomics/.snakemake/tmp.gk8nfgka/snakejob.megahit.1.sh). For error details see the cluster log and the log files of the involved rule(s).
+Shutting down, this might take some time.
+Exiting because a job execution failed. Look above for error message
+Complete log: ../../../../../../../../home/naras0c/repositories/github/soil_experiment/.snakemake/log/2024-02-15T093232.014503.snakemake.log

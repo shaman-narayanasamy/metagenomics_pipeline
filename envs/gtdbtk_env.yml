@@ -1,0 +1,6 @@
+name: gtdbtk_env
+channels:
+  - conda-forge
+dependencies:
+  - gtdbtk=1.2.0=py_0
+prefix: /ibex/user/naras0c/conda-environments/gtdbtk_env

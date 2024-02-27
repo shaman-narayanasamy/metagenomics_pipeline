@@ -1,0 +1,139 @@
+nohup: ignoring input
+flatpak: symbol lookup error: /lib64/libldap.so.2: undefined symbol: EVP_md2, version OPENSSL_3.0.0
+Performing dry-run
+snakemake --dry-run -rp --configfile config/config.yml --conda-prefix /ibex/user/naras0c/conda-environments/ --use-conda --conda-frontend mamba --configfile config/config.yml --jobs 200 --cluster-config config/ibex_cluster_config.yml --cluster "sbatch -p {cluster.partition} -N {cluster.nodes} -n {cluster.ntasks} -c {cluster.ncpus} -t {cluster.time} --mem {cluster.mem_gb} --mail-user {cluster.mail-user} --job-name {cluster.job-name} --output {cluster.stdout}" --cluster-cancel scancel --notemp -s workflows/metagenomics/preprocessing.smk
+Building DAG of jobs...
+Job stats:
+job                            count
+---------------------------  -------
+all                                1
+sortmerna_filter_paired            1
+sortmerna_filter_single            1
+sortmerna_index_database           1
+sortmerna_prepare_sequences        1
+trimmomatic_trimming               1
+total                              6
+
+
+[Tue Feb 13 18:01:12 2024]
+rule trimmomatic_trimming:
+    input: /ibex/scratch/projects/c2188/soil_experiment/public_datasets/metadata/ftp.sra.ebi.ac.uk/vol1/fastq/ERR321/003/ERR3219723/ERR3219723_1.fastq.gz, /ibex/scratch/projects/c2188/soil_experiment/public_datasets/metadata/ftp.sra.ebi.ac.uk/vol1/fastq/ERR321/003/ERR3219723/ERR3219723_2.fastq.gz
+    output: test_sample/test_sample_R1.processed.fastq.gz, test_sample/test_sample_R2.processed.fastq.gz, test_sample/test_sample_R1.unpaired.processed.fastq.gz, test_sample/test_sample_R2.unpaired.processed.fastq.gz, test_sample/test_sample_SE.processed.fastq.gz
+    jobid: 2
+    benchmark: /ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/test_sample/benchmarks/preprocessing_trimming.txt
+    reason: Missing output files: test_sample/test_sample_SE.processed.fastq.gz, test_sample/test_sample_R1.processed.fastq.gz, test_sample/test_sample_R2.processed.fastq.gz
+    wildcards: sample=test_sample
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, cpus_per_task=12, runtime=2880
+
+ 
+        trimmomatic PE -phred33             -threads 12             /ibex/scratch/projects/c2188/soil_experiment/public_datasets/metadata/ftp.sra.ebi.ac.uk/vol1/fastq/ERR321/003/ERR3219723/ERR3219723_1.fastq.gz /ibex/scratch/projects/c2188/soil_experiment/public_datasets/metadata/ftp.sra.ebi.ac.uk/vol1/fastq/ERR321/003/ERR3219723/ERR3219723_2.fastq.gz             test_sample/test_sample_R1.processed.fastq.gz test_sample/test_sample_R1.unpaired.processed.fastq.gz             test_sample/test_sample_R2.processed.fastq.gz test_sample/test_sample_R2.unpaired.processed.fastq.gz             ILLUMINACLIP:/ibex/user/naras0c/airport_surveillance/adapters.fa:2:30:10             LEADING:3             TRAILING:3             SLIDINGWINDOW:4:15             MINLEN:36 
+
+        # Check if the unpaired files exist and are non-empty
+        if [[ -s test_sample/test_sample_R1.unpaired.processed.fastq.gz && -s test_sample/test_sample_R2.unpaired.processed.fastq.gz ]]; then
+            zcat test_sample/test_sample_R1.unpaired.processed.fastq.gz test_sample/test_sample_R2.unpaired.processed.fastq.gz | gzip > test_sample/test_sample_SE.processed.fastq.gz
+        else
+            touch test_sample/test_sample_SE.processed.fastq.gz
+        fi
+        
+
+[Tue Feb 13 18:01:12 2024]
+rule sortmerna_prepare_sequences:
+    input: /ibex/user/naras0c/genomes/cabbage/ncbi_dataset/data/GCF_000695525.1/GCF_000695525.1_BOL_genomic.fna
+    output: /ibex/user/naras0c/sortmerna/contaminant_20.fasta
+    log: logs/pullseq_filter_length.txt
+    jobid: 5
+    benchmark: benchmarks/pullseq_filter_length.txt
+    reason: Missing output files: /ibex/user/naras0c/sortmerna/contaminant_20.fasta
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, cpus_per_task=4, runtime=2880
+
+
+        pullseq -i /ibex/user/naras0c/genomes/cabbage/ncbi_dataset/data/GCF_000695525.1/GCF_000695525.1_BOL_genomic.fna -m 20 > /ibex/user/naras0c/sortmerna/contaminant_20.fasta
+	
+
+[Tue Feb 13 18:01:12 2024]
+rule sortmerna_index_database:
+    input: /ibex/user/naras0c/sortmerna, /ibex/user/naras0c/sortmerna/contaminant_20.fasta
+    output: /ibex/user/naras0c/sortmerna/contaminant_20.done
+    log: logs/sortmerna_index_database.txt
+    jobid: 4
+    benchmark: benchmarks/sortmerna_index_database.txt
+    reason: Missing output files: /ibex/user/naras0c/sortmerna/contaminant_20.done; Input files updated by another job: /ibex/user/naras0c/sortmerna/contaminant_20.fasta
+    resources: mem_mb=<TBD>, disk_mb=<TBD>, tmpdir=<TBD>, cpus_per_task=12, runtime=4320
+
+
+        sortmerna             --workdir /ibex/user/naras0c/sortmerna             --index 1             --threads 12             --ref /ibex/user/naras0c/sortmerna/contaminant_20.fasta &> logs/sortmerna_index_database.txt
+
+        touch /ibex/user/naras0c/sortmerna/contaminant_20.done
+	
+
+[Tue Feb 13 18:01:12 2024]
+rule sortmerna_filter_paired:
+    input: test_sample/test_sample_R1.processed.fastq.gz, test_sample/test_sample_R2.processed.fastq.gz, /ibex/user/naras0c/sortmerna/hg38_genome-minlength_20.fasta, /ibex/user/naras0c/sortmerna/contaminant_20.done
+    output: test_sample/test_sample_R1.processed.filtered.fastq.gz, test_sample/test_sample_R2.processed.filtered.fastq.gz, test_sample/test_sample_unpaired_R1.processed.filtered.fastq.gz, test_sample/test_sample_unpaired_R2.processed.filtered.fastq.gz
+    jobid: 3
+    benchmark: test_sample/benchmarks/preprocessing_filtering_paired.txt
+    reason: Missing output files: test_sample/test_sample_R2.processed.filtered.fastq.gz, test_sample/test_sample_unpaired_R2.processed.filtered.fastq.gz, test_sample/test_sample_R1.processed.filtered.fastq.gz, test_sample/test_sample_unpaired_R1.processed.filtered.fastq.gz; Input files updated by another job: /ibex/user/naras0c/sortmerna/contaminant_20.done, test_sample/test_sample_R1.processed.fastq.gz, test_sample/test_sample_R2.processed.fastq.gz
+    wildcards: sample=test_sample
+    resources: mem_mb=<TBD>, disk_mb=<TBD>, tmpdir=<TBD>, cpus_per_task=24, runtime=4320
+
+ 
+        # Run SortMeRNA for paired-end reads
+        sortmerna                   --workdir /tmp/test_sample/test_sample_paired_sortmerna_workdir                   --ref /ibex/user/naras0c/sortmerna/hg38_genome-minlength_20.fasta                   --idx-dir /ibex/user/naras0c/sortmerna/idx                   --reads test_sample/test_sample_R1.processed.fastq.gz                   --reads test_sample/test_sample_R2.processed.fastq.gz                   --threads 24                   --other /tmp/test_sample/test_sample_paired.non_contaminant                   --fastx                   --out2                   --sout
+
+        # Since SortMeRNA appends _1 and _2 to the file names for paired reads, 
+        # and automatically adds .fastq extension, we can just move them directly.
+        mv /tmp/test_sample/test_sample_paired.non_contaminant_paired_fwd.fq.gz test_sample/test_sample_R1.processed.filtered.fastq.gz
+        mv /tmp/test_sample/test_sample_paired.non_contaminant_paired_rev.fq.gz test_sample/test_sample_R2.processed.filtered.fastq.gz
+        mv /tmp/test_sample/test_sample_paired.non_contaminant_singleton_fwd.fq.gz test_sample/test_sample_unpaired_R1.processed.filtered.fastq.gz
+        mv /tmp/test_sample/test_sample_paired.non_contaminant_singleton_rev.fq.gz test_sample/test_sample_unpaired_R2.processed.filtered.fastq.gz
+        
+
+[Tue Feb 13 18:01:12 2024]
+rule sortmerna_filter_single:
+    input: test_sample/test_sample_SE.processed.fastq.gz, test_sample/test_sample_unpaired_R1.processed.filtered.fastq.gz, test_sample/test_sample_unpaired_R2.processed.filtered.fastq.gz, /ibex/user/naras0c/sortmerna/hg38_genome-minlength_20.fasta, /ibex/user/naras0c/sortmerna/contaminant_20.done
+    output: test_sample/test_sample_SE.processed.filtered.fastq.gz
+    log: test_sample/logs/preprocessing_filtering_single.txt
+    jobid: 1
+    benchmark: test_sample/benchmarks/preprocessing_filtering_single.txt
+    reason: Missing output files: test_sample/test_sample_SE.processed.filtered.fastq.gz; Input files updated by another job: test_sample/test_sample_unpaired_R1.processed.filtered.fastq.gz, test_sample/test_sample_SE.processed.fastq.gz, /ibex/user/naras0c/sortmerna/contaminant_20.done, test_sample/test_sample_unpaired_R2.processed.filtered.fastq.gz
+    wildcards: sample=test_sample
+    resources: mem_mb=<TBD>, disk_mb=<TBD>, tmpdir=<TBD>, cpus_per_task=12, runtime=2880
+
+
+        # Check if file is empty
+        if [[ -s test_sample/test_sample_SE.processed.fastq.gz ]]; then
+            # Run SortMeRNA for unpaired reads
+            sortmerna                       --workdir /tmp/test_sample/test_sample_unpaired_sortmerna_workdir                       --ref /ibex/user/naras0c/sortmerna/hg38_genome-minlength_20.fasta                       --idx-dir /ibex/user/naras0c/sortmerna/idx                       --reads test_sample/test_sample_SE.processed.fastq.gz                       --threads 12                       --other /tmp/test_sample/test_sample_SE.non_contaminant                       --fastx
+
+            zcat /tmp/test_sample/test_sample_SE.non_contaminant.fq.gz                  test_sample/test_sample_unpaired_R1.processed.filtered.fastq.gz                  test_sample/test_sample_unpaired_R2.processed.filtered.fastq.gz | gzip >                  test_sample/test_sample_SE.processed.filtered.fastq.gz
+        else
+            touch test_sample/test_sample_SE.processed.filtered.fastq.gz
+        fi
+        
+
+[Tue Feb 13 18:01:12 2024]
+localrule all:
+    input: test_sample/test_sample_SE.processed.filtered.fastq.gz, test_sample/test_sample_R1.processed.filtered.fastq.gz, test_sample/test_sample_R2.processed.filtered.fastq.gz
+    jobid: 0
+    reason: Input files updated by another job: test_sample/test_sample_R2.processed.filtered.fastq.gz, test_sample/test_sample_R1.processed.filtered.fastq.gz, test_sample/test_sample_SE.processed.filtered.fastq.gz
+    resources: mem_mb=<TBD>, disk_mb=<TBD>, tmpdir=/tmp
+
+Job stats:
+job                            count
+---------------------------  -------
+all                                1
+sortmerna_filter_paired            1
+sortmerna_filter_single            1
+sortmerna_index_database           1
+sortmerna_prepare_sequences        1
+trimmomatic_trimming               1
+total                              6
+
+Reasons:
+    (check individual jobs above for details)
+    input files updated by another job:
+        all, sortmerna_filter_paired, sortmerna_filter_single, sortmerna_index_database
+    missing output files:
+        sortmerna_filter_paired, sortmerna_filter_single, sortmerna_index_database, sortmerna_prepare_sequences, trimmomatic_trimming
+
+This was a dry-run (flag -n). The order of jobs does not reflect the order of execution.
