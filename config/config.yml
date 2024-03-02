@@ -4,6 +4,7 @@ output_dir: "/ibex/scratch/projects/c2188/soil_experiment"
 data_table: "/ibex/scratch/projects/c2188/soil_experiment/public_datasets/metadata/input_table.tsv"
 input_dir:
   mg_assembly_input: "/ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/"
+  mg_binning_input: "/ibex/scratch/projects/c2188/soil_experiment/metagenomics/assembly/"
 
 trimmomatic:
     adapters_path: "/ibex/user/naras0c/airport_surveillance/adapters.fa"
@@ -16,3 +17,9 @@ sortmerna:
 
 salmon:
     min_assigned_frags: 1
+
+concoct:
+    threads: 40
+    read_length: 250
+    contig_split_length: 5000
+    contig_min_length: 1000
