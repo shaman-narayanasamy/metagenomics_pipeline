@@ -19,5 +19,5 @@ include:
 
 rule all:
      input:
-        expand("{sample}/binning/concoct/bins", sample = samples.index)
+        expand("{sample}/concoct/bins", sample = samples.index)
 

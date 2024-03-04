@@ -64,7 +64,7 @@ rule index_assembly_bam:
     input:
         '{sample}/{sample}.reads.sorted.bam'
     output:
-        '{sample}/{sample}.reads.sorted.bai'
+        '{sample}/{sample}.reads.sorted.bam.bai'
     conda: "../../../envs/bwa_env.yml"
     benchmark: os.path.join(output_dir, "{sample}/benchmarks/index_bam.txt")
     log: os.path.join(output_dir, "{sample}/logs/index_bam.txt")
@@ -75,7 +75,7 @@ rule index_assembly_bam:
 
 rule flagstat_assembly_bam:
     input:
-        '{sample}/{sample}.reads.sorted.bam'
+        '{sample}/{sample}.reads.sorted.bam',
     output:
         '{sample}/{sample}.reads.sorted.flagstat.txt'
     conda: "../../../envs/bwa_env.yml"

@@ -2,10 +2,10 @@ rule concoct_cut_contigs:
     input:
         fasta = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa"), 
         bam = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam'),
-#        bai = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bai')
+        bai = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam.bai')
     output:
-        split_contigs_fasta = "{sample}/binning/concoct/split_contigs_len-%s.fa" % config["concoct"]["contig_split_length"],
-        split_contigs_bed = "{sample}/binning/concoct/split_contigs_len-%s.bed" % config["concoct"]["contig_split_length"]
+        split_contigs_fasta = "{sample}/concoct/split_contigs_len-%s.fa" % config["concoct"]["contig_split_length"],
+        split_contigs_bed = "{sample}/concoct/split_contigs_len-%s.bed" % config["concoct"]["contig_split_length"]
     params:
         contig_split_length = config["concoct"]["contig_split_length"]
     conda: "../../../envs/concoct_env.yml"
@@ -18,12 +18,11 @@ rule concoct_cut_contigs:
 
 rule concoct_coverage_table:
     input:
-        split_contigs_fasta = "{sample}/binning/concoct/split_contigs_len-%s.fa" % config["concoct"]["contig_split_length"],
-        split_contigs_bed = "{sample}/binning/concoct/split_contigs_len-%s.bed" % config["concoct"]["contig_split_length"],
+        split_contigs_bed = "{sample}/concoct/split_contigs_len-%s.bed" % config["concoct"]["contig_split_length"],
         bam = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam'),
-#        bai = '{sample}/{sample}.reads.sorted.bai'
+        bai = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam.bai')
     output:
-        coverage_table = "{sample}/binning/concoct/split_contigs_len-%s_coverage_table.tsv" % config["concoct"]["contig_split_length"]
+        coverage_table = "{sample}/concoct/split_contigs_len-%s_coverage_table.tsv" % config["concoct"]["contig_split_length"]
     params:
         contig_split_length = config["concoct"]["contig_split_length"]
     conda: "../../../envs/concoct_env.yml"
@@ -31,15 +30,15 @@ rule concoct_coverage_table:
     log: os.path.join("{sample}/logs/concoct_coverage_table.txt")
     shell:
         """
-        concoct_coverage_table.py {input.split_contigs_fasta} {input.bam} > {output.coverage_table}
+        concoct_coverage_table.py {input.split_contigs_bed} {input.bam} > {output.coverage_table}
         """
 
 rule concoct:
     input:
-        split_contigs_fasta = "{sample}/binning/concoct/split_contigs_len-%s.fa" % config["concoct"]["contig_split_length"],
-        coverage_table = "{sample}/binning/concoct/split_contigs_len-%s_coverage_table.tsv" % config["concoct"]["contig_split_length"]
+        split_contigs_fasta = "{sample}/concoct/split_contigs_len-%s.fa" % config["concoct"]["contig_split_length"],
+        coverage_table = "{sample}/concoct/split_contigs_len-%s_coverage_table.tsv" % config["concoct"]["contig_split_length"]
     output:
-        outdir = directory("{sample}/binning/concoct/results")
+        outdir = directory("{sample}/concoct/results")
     params:
         threads = config["concoct"]["threads"],
         contig_min_length = config["concoct"]["contig_min_length"]
@@ -54,11 +53,11 @@ rule concoct:
 
 rule concoct_merge_clusters:
     input:
-        outdir = "{sample}/binning/concoct/results",
+        outdir = "{sample}/concoct/results",
         fasta = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa"), 
     output:
-        merged_table = "{sample}/binning/concoct/bins/clustering_merged.csv",
-        bin_dir = directory("{sample}/binning/concoct/bins")
+        merged_table = "{sample}/concoct/bins/clustering_merged.csv",
+        bin_dir = directory("{sample}/concoct/bins")
     conda: "../../../envs/concoct_env.yml"
     benchmark: os.path.join("{sample}/benchmarks/concoct_merge_clusters.txt")
     log: os.path.join("{sample}/logs/concoct_merge_clusters.txt")

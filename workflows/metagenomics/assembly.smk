@@ -24,5 +24,6 @@ rule all:
      input:
         expand("{sample}/megahit_assembly/final.contigs.fa", sample = samples.index),
         expand('{sample}/{sample}.reads.sorted.bam', sample = samples.index),
+        expand('{sample}/{sample}.reads.sorted.bam.bai', sample = samples.index),
         expand('{sample}/{sample}.reads.sorted.flagstat.txt', sample = samples.index)
 
