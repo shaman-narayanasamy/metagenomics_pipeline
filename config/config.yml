@@ -18,8 +18,20 @@ sortmerna:
 salmon:
     min_assigned_frags: 1
 
+mosdepth:
+    threads: 12
+
 concoct:
     threads: 40
     read_length: 250
     contig_split_length: 1000
     contig_min_length: 1000
+
+cat_bat:
+    threads: 40
+    db_path:
+      gtdb: "/ibex/reference/KSL/cat/20231120/20231120_CAT_gtdb/db"
+      nr: "/ibex/reference/KSL/cat/20231120/20231120_CAT_nr/db"
+    tx_path:
+      gtdb: "/ibex/reference/KSL/cat/20231120/20231120_CAT_gtdb/tax"
+      nr: "/ibex/reference/KSL/cat/20231120/20231120_CAT_nr/tax"

@@ -64,9 +64,21 @@ flagstat_assembly_bam:
     mem_gb: "100GB"
     time: "48:00:00"
 
+mosdepth:
+    nodes: 1
+    ncpus: 12
+    mem_gb: "120GB"
+    time: "72:00:00"
+
 concoct:
-    nodes: 40
+    nodes: 1
     ncpus: 40
     mem_gb: "200GB"
     time: "72:00:00"
+
+cat_bat:
+    nodes: 1
+    ncpus: 40
+    mem_gb: "200GB"
+    time: "120:00:00"
 

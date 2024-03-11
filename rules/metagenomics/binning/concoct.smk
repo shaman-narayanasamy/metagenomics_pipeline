@@ -38,7 +38,7 @@ rule concoct:
         split_contigs_fasta = "{sample}/concoct/split_contigs_len-%s.fa" % config["concoct"]["contig_split_length"],
         coverage_table = "{sample}/concoct/split_contigs_len-%s_coverage_table.tsv" % config["concoct"]["contig_split_length"]
     output:
-        outdir = directory("{sample}/concoct/results")
+        clustering_result = "{sample}/concoct/results_clustering_gt%s.csv" % config["concoct"]["contig_min_length"]
     params:
         threads = config["concoct"]["threads"],
         contig_min_length = config["concoct"]["contig_min_length"]
@@ -48,13 +48,13 @@ rule concoct:
     shell:
         """
         concoct --composition_file {input.split_contigs_fasta} -l {params.contig_min_length} \
-        --coverage_file {input.coverage_table} -b {output.outdir}/binning
+        --coverage_file {input.coverage_table} -t {params.threads} -b {output.clustering_result}
         """
 
 rule concoct_merge_clusters:
     input:
-        outdir = "{sample}/concoct/results",
-        fasta = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa"), 
+        clustering_result = "{sample}/concoct/results_clustering_gt%s.csv" % config["concoct"]["contig_min_length"],
+        fasta = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa") 
     output:
         merged_table = "{sample}/concoct/bins/clustering_merged.csv",
         bin_dir = directory("{sample}/concoct/bins")
@@ -63,10 +63,7 @@ rule concoct_merge_clusters:
     log: os.path.join("{sample}/logs/concoct_merge_clusters.txt")
     shell:
         """
-        merge_cutup_clustering.py {input.outdir}/binning.csv > {output.merged_table}
-        mkdir {output.bin_dir}
+        merge_cutup_clustering.py {input.clustering_result} > {output.merged_table}
+        mkdir -p {output.bin_dir}
         extract_fasta_bins.py {input.fasta} {output.merged_table} --output_path {output.bin_dir}
         """
-
-
-
