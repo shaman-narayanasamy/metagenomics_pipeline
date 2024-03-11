@@ -6,7 +6,7 @@ Prepare a table with the  follwoing columns:
 
 Here  is a nice command to  generate such a  table:
 ```{sh}
-cd /ibex/scratch/projects/c2188/soil_experiment/raw_data
+cd /ibex/scratch/projects/c2188/soil_experiment/raw_data/version_01
 
 $ { echo -e 'sample_ID\tR1\tR2'; paste <(ls *R1_001.fastq.gz | cut -f2 -d "_") <(\ls $PWD/*R1_001.fastq.gz) <(\ls $PWD/*R1_001.fastq.gz | sed -e 's/_R1_/_R2_/g');}  > meta/sample_table.tsv
 ```
