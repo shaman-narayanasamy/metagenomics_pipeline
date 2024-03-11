@@ -70,6 +70,11 @@ mosdepth:
     mem_gb: "120GB"
     time: "72:00:00"
 
+salmon_quant_all:
+    nodes: 1
+    ncpus: 14
+    time: "48:00:00"
+
 concoct:
     nodes: 1
     ncpus: 40
