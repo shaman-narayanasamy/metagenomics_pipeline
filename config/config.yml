@@ -1,7 +1,7 @@
 ---
 tmp_dir: "/ibex/user/naras0c/tmp"
 output_dir: "/ibex/scratch/projects/c2188/soil_experiment"
-data_table: "/ibex/scratch/projects/c2188/soil_experiment/public_datasets/metadata/input_table.tsv"
+data_table: "/ibex/scratch/projects/c2188/soil_experiment/raw_data/meta/sample_table.tsv"
 input_dir:
   mg_assembly_input: "/ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/"
   mg_binning_input: "/ibex/scratch/projects/c2188/soil_experiment/metagenomics/assembly/"
