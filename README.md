@@ -33,6 +33,11 @@ Preprocessing:
 nohup launchers/sbatch_preprocessing.sh > nohup_logs/preprocessing_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &
 ```
 
+Quantification:
+```{sh}
+nohup launchers/sbatch_quantification.sh > nohup_logs/quantification_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &
+```
+
 Assembly:
 ```{sh}
 nohup launchers/sbatch_assembly.sh > nohup_logs/assembly_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &

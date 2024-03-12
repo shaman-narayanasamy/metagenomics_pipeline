@@ -1,4 +1,4 @@
-rule index_all_mags:
+rule index_catalogue:
     input:
         gene_catalogue=config["gene_catalogue"]
     output:
@@ -8,8 +8,8 @@ rule index_all_mags:
         "../../../../envs/salmon_env.yml"
     container:
         "https://depot.galaxyproject.org/singularity/salmon:1.8.0--h7e5ed60_1"
-    benchmark: "quantification/benchmarks/salmon/index/all.txt"
-    log: "quantification/log/salmon/index/all.log"
+    benchmark: "salmon/benchmarks/index.txt"
+    log: "salmon/log/index.log"
     shell:
         """
         salmon index -t {input.all_bins} -i {output.index_dir} --gencode -p {threads}
