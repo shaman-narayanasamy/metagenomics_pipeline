@@ -17,8 +17,6 @@ samples = pd.read_table(config["data_table"], sep="\t", comment = "#").set_index
 workdir:
     output_dir
 
-print(samples)
-
 ## All workflow
 include:
     '../../rules/metagenomics/quantification/salmon/indexing.smk'
