@@ -1,8 +1,8 @@
 rule salmon_quant:
     input:
         index = "salmon/index/gene_catalogue",  # Salmon index directory
-        r1 = "%s/{sample}_R1.processed.filtered.fastq.gz" % input_dir,
-        r2 = "%s/{sample}_R2.processed.filtered.fastq.gz" % input_dir
+        r1 = "%s/{sample}/{sample}_R1.processed.filtered.fastq.gz" % input_dir,
+        r2 = "%s/{sample}/{sample}_R2.processed.filtered.fastq.gz" % input_dir
     output:
         quant_dir = directory("{sample}/salmon/{sample}_quant")
     params:

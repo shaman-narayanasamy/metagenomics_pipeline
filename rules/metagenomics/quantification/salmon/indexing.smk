@@ -12,5 +12,5 @@ rule index_catalogue:
     log: "salmon/log/index.log"
     shell:
         """
-        salmon index -t {input.all_bins} -i {output.index_dir} --gencode -p {threads}
+        salmon index -t {input.gene_catalogue} -i {output.index_dir} --gencode -p {threads}
         """

@@ -5,7 +5,7 @@ import pandas as pd
 tmp_dir = os.environ.get("tmp_dir", config['tmp_dir'])
 
 ## Define input directory
-input_dir = config["input_dir"]["mg_assembly_input"]
+input_dir = config["input_dir"]["mg_quantification_input"]
 
 ## Define output directory
 output_dir = os.path.join(config['output_dir'],  "metagenomics", "quantification")
@@ -28,4 +28,4 @@ include:
 
 rule all:
     input:
-        expand("{sample}/salmon/{sample}_quant", sample = samples)
+        expand("{sample}/salmon/{sample}_quant", sample = samples.index)

@@ -2,9 +2,10 @@
 tmp_dir: "/ibex/user/naras0c/tmp"
 output_dir: "/ibex/scratch/projects/c2188/soil_experiment"
 data_table: "/ibex/scratch/projects/c2188/soil_experiment/raw_data/version_01/meta/sample_table.tsv"
-gene_catalogue: "/ibex/scratch/projects/c2188/soil_experiment/raw_data/version_01/meta/sample_table.tsv" # Will be available
+gene_catalogue: "/ibex/scratch/projects/c2188/soil_experiment/reference_sequences/sequence_catalogue.fasta"
 input_dir:
   mg_assembly_input: "/ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing/"
+  mg_quantification_input: "/ibex/scratch/projects/c2188/soil_experiment/metagenomics/preprocessing"
   mg_binning_input: "/ibex/scratch/projects/c2188/soil_experiment/metagenomics/assembly/"
 
 trimmomatic:
@@ -18,6 +19,7 @@ sortmerna:
 
 salmon:
     min_assigned_frags: 1
+    gene_catalogue: "/ibex/scratch/projects/c2188/soil_experiment/reference_sequences/all_reference_sequences.fasta"
 
 mosdepth:
     threads: 12

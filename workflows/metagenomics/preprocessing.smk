@@ -19,7 +19,6 @@ include:
 include:
     '../../rules/metagenomics/preprocessing/sortmerna_index.smk'
 
-
 include:
     '../../rules/metagenomics/preprocessing/sortmerna_filter.smk'
 
