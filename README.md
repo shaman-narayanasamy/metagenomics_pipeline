@@ -10,6 +10,17 @@ cd /ibex/scratch/projects/c2188/soil_experiment/raw_data/version_01
 
  echo -e 'sample_alias\tR1\tR2'; paste <(ls *R1_001.fastq.gz | cut -f2 -d "_") <(\ls $PWD/*R1_001.fastq.gz) <(\ls $PWD/*R1_001.fastq.gz | sed -e 's/_R1_/_R2_/g');}  > meta/sample_table.tsv
 ```
+## Reference sequence preparation
+Since we know specific sequences that we are interested in, we create a sequence database to perform reference-based
+analysis. To prepare the sequences for programs like salmon
+(pseudoalignment-based quantification), ensure that the fasta file is in
+appropriate format, specifically the headers: 
+
+```{sh}
+cat * | grep -v "^$" | sed -e 's/ /_/g'  > sequence_catalogue.fasta 
+```
+
+
 ## Using the launcher
 
 To download the data, we can use the following script:
