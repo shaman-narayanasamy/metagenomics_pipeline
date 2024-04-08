@@ -85,5 +85,5 @@ quant_dat <-
 
 ```{r}
 ## Write table
-write_tsv(quant_dat, paste(quant_folder, "sequence_catalogue-TMP.tsv", sep = '/'))
+write_tsv(quant_dat, paste(quant_folder, "sequence_catalogue-TPM.tsv", sep = '/'))
 ```

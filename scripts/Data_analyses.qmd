@@ -1,0 +1,617 @@
+---
+title: "Soil experiment data analyses"
+format: html
+editor: source
+fig-cap-location: bottom
+project:
+  output-dir: render/
+execute:
+  echo: false 
+  warning: false
+  message: false
+---
+
+```{r load_packages}
+library(tidyverse)
+library(googlesheets4)
+library(ggsignif)
+library(ggprism)
+
+# tidytranscriptomics-related packages
+library(tidybulk)
+library(tidySummarizedExperiment) # we'll load this below to show what it can do
+library(sva) # Must be loaded AFTER tidySummarizedExperiment as there is a clash in one of the dependency packages
+library(DESeq2)
+```
+
+```{r read_count_data}
+counts <- 
+  read_tsv('/Users/shaman.narayanasamy/Work/Data/soil_experiment/quantification/sequence_catalogue-raw_counts.tsv') %>% 
+  mutate(Name = str_remove(Name, "_sequence")) %>% 
+  mutate(Name = str_replace_all(Name, "kdpCsequence", "kdpC"))
+```
+```{r read_data}
+sample_info <- 
+  read_sheet("https://docs.google.com/spreadsheets/d/1iCwz4vX_M2iUL_CiIzpfR6VpDE4rZrnckYZ8Vfcn0KI/edit#gid=312819308", sheet = "exp_design_standardised") %>%    
+    rename(treatment = `water treatment`,  source = `water source`, condition = `dark/light`) %>%  
+    mutate(light =  
+           case_when(  
+             `condition` == "light" ~ TRUE, 
+             TRUE ~ FALSE 
+             ) 
+         ) %>%  
+    mutate(anaerobic =  
+           case_when(  
+             `source` == "anMBR" ~ TRUE, 
+             TRUE ~ FALSE 
+             ) 
+         ) %>% 
+      mutate(chlorinated =  
+           case_when(  
+             `treatment` == "chlorinated" ~ TRUE, 
+             TRUE ~ FALSE 
+             ) 
+         ) 
+  
+dna_uptake <- 
+  c("comE","comF","comL","comP","pilG","pilI")
+
+dna_integration <-  
+  c("recA","polA","dnaX","mutY","uvrC","ACIAD3108","ACIAD3672","ddrR","recN","ruvB","himA","xerD","atpA","atpE","atpH","atpI")
+```
+
+```{r}
+count_mat <- 
+  counts %>% 
+  select(-Length, -EffectiveLength) %>% 
+  column_to_rownames("Name") %>% 
+  as.matrix()
+
+colData <- DataFrame(sample_info)
+
+rownames(colData) <- colData$sample_id
+
+## Rearrange the count matrix to correspond to the sample information
+count_mat <- count_mat[,rownames(colData)] 
+
+counts <- SummarizedExperiment(assays=list(counts=count_mat),
+                           colData=colData)
+```
+
+```{r compare_control}
+model = ~ dDNA.control 
+
+de_res_control_w2 <-
+  counts %>%  
+  filter(weeks == 2) %>% 
+  identify_abundant(factor_of_interest = dDNA.control, minimum_counts = 4) %>% 
+  scale_abundance() %>% 
+  test_differential_abundance(
+          model,
+          method = "limma_voom",
+          prefix = "limma_voom_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+          test_differential_abundance( 
+          model,
+          method = "edgeR_quasi_likelihood", 
+          prefix = "edgerQLT_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+        test_differential_abundance(
+          model,
+          method = "edgeR_likelihood_ratio",
+          prefix = "edgerLR_", 
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+  as_tibble()
+
+de_res_control_w4 <-
+  counts %>%  
+  filter(weeks == 4) %>% 
+  identify_abundant(factor_of_interest = dDNA.control, minimum_counts = 4) %>% 
+  test_differential_abundance(
+          model,
+          method = "limma_voom",
+          prefix = "limma_voom_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+          test_differential_abundance( 
+          model,
+          method = "edgeR_quasi_likelihood", 
+          prefix = "edgerQLT_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+        test_differential_abundance(
+          model,
+          method = "edgeR_likelihood_ratio",
+          prefix = "edgerLR_", 
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+  as_tibble()
+```
+```{r exclude_samples}
+## Exclude MiliQ samples
+remove_samples <-  
+  counts %>% 
+  filter(source == "MQ") %>% 
+  select(.sample) %>% 
+  distinct() %>% pull(.sample)
+
+counts <- 
+  counts %>% 
+  filter(!.sample %in% remove_samples)
+```
+
+
+```{r compare_source}
+model = ~ anaerobic + light + chlorinated
+
+de_res_source_w2 <-
+  counts %>%  
+  filter(weeks == 2) %>% 
+  scale_abundance() %>% 
+  identify_abundant(factor_of_interest = anaerobic, minimum_counts = 4) %>% 
+  test_differential_abundance(
+          model,
+          method = "limma_voom",
+          prefix = "limma_voom_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+          test_differential_abundance( 
+          model,
+          method = "edgeR_quasi_likelihood", 
+          prefix = "edgerQLT_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+        test_differential_abundance(
+          model,
+          method = "edgeR_likelihood_ratio",
+          prefix = "edgerLR_", 
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+  as_tibble()
+
+de_res_source_w4 <-
+  counts %>%  
+  filter(weeks == 4) %>% 
+  scale_abundance() %>% 
+  identify_abundant(factor_of_interest = anaerobic, minimum_counts = 4) %>% 
+  test_differential_abundance(
+          model,
+          method = "limma_voom",
+          prefix = "limma_voom_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+          test_differential_abundance( 
+          model,
+          method = "edgeR_quasi_likelihood", 
+          prefix = "edgerQLT_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+        test_differential_abundance(
+          model,
+          method = "edgeR_likelihood_ratio",
+          prefix = "edgerLR_", 
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+  as_tibble()
+```
+
+```{r compare_light}
+model = ~ light + anaerobic + chlorinated
+
+de_res_light_w2 <-
+  counts %>%  
+  filter(weeks == 2) %>% 
+  scale_abundance() %>% 
+  identify_abundant(factor_of_interest = light, minimum_counts = 4) %>% 
+  test_differential_abundance(
+          model,
+          method = "limma_voom",
+          prefix = "limma_voom_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+          test_differential_abundance( 
+          model,
+          method = "edgeR_quasi_likelihood", 
+          prefix = "edgerQLT_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+        test_differential_abundance(
+          model,
+          method = "edgeR_likelihood_ratio",
+          prefix = "edgerLR_", 
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+  as_tibble()
+
+de_res_light_w4 <-
+  counts %>%  
+  filter(weeks == 4) %>% 
+  scale_abundance() %>% 
+  identify_abundant(factor_of_interest = light, minimum_counts = 4) %>% 
+  test_differential_abundance(
+          model,
+          method = "limma_voom",
+          prefix = "limma_voom_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+          test_differential_abundance( 
+          model,
+          method = "edgeR_quasi_likelihood", 
+          prefix = "edgerQLT_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+        test_differential_abundance(
+          model,
+          method = "edgeR_likelihood_ratio",
+          prefix = "edgerLR_", 
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+  as_tibble()
+```
+
+```{r compare_treatment}
+model = ~ chlorinated + light + anaerobic
+
+de_res_treatment_w2 <-
+  counts %>%  
+  filter(weeks == 2) %>% 
+  identify_abundant(factor_of_interest = chlorinated, minimum_counts = 4) %>% 
+  scale_abundance() %>% 
+  test_differential_abundance(
+          model,
+          method = "limma_voom",
+          prefix = "limma_voom_",
+          contrasts = c("TRUE - FALSE"),
+          action="get"
+          ) %>% 
+          test_differential_abundance( 
+          model,
+          method = "edgeR_quasi_likelihood", 
+          prefix = "edgerQLT_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+        test_differential_abundance(
+          model,
+          method = "edgeR_likelihood_ratio",
+          prefix = "edgerLR_", 
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+  as_tibble()
+
+de_res_treatment_w4 <-
+  counts %>%  
+  filter(weeks == 4) %>% 
+  identify_abundant(factor_of_interest = chlorinated, minimum_counts = 4) %>% 
+  test_differential_abundance(
+          model,
+          method = "limma_voom",
+          prefix = "limma_voom_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+          test_differential_abundance( 
+          model,
+          method = "edgeR_quasi_likelihood", 
+          prefix = "edgerQLT_",
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+        test_differential_abundance(
+          model,
+          method = "edgeR_likelihood_ratio",
+          prefix = "edgerLR_", 
+          contrasts = "TRUE - FALSE",
+          action="get"
+          ) %>% 
+  as_tibble()
+```
+
+```{r define_colours}
+source_colours <- c("anMBR" = "#1f77b4", 
+                    "aMBR" = "#ff7f0e")
+
+condition_colours <- c("light" = "#2ca02c", 
+                    "dark" = "#9467bd")
+
+treatment_colours <- c("chlorinated" = "#d62728", 
+                    "UV" = "#8c564b")
+```
+
+```{r generate_pca}
+pca <- 
+  counts %>% 
+  keep_abundant(minimum_counts = 1, minimum_proportion = 0) %>% 
+  reduce_dimensions(method = "PCA") %>% 
+  pivot_sample() %>% 
+  as_tibble() 
+
+p <- list()
+
+my_variables <- 
+  colData %>% colnames() %>% .[c(2:6)]
+
+for (i in my_variables){
+        
+  the_variable <- my_variables[i] 
+  
+  p[[i]] <-
+    ggplot(pca, aes(x = PC1, y = PC2, colour = as.character(!!sym(i)))) +
+  geom_point(size = 3) +
+  theme_minimal() +
+    labs(colour = i)
+  
+}
+```
+## PCA visualisations
+```{r visualise_pca_condition}
+#| label: fig-pca
+#| fig-cap: "PCA visualisation of different variables" 
+#| fig-subcap:
+#|   - "Dark/light condition"
+#|   - "Treatment type" 
+#|   - "Water source" 
+#|   - "Sampling time" 
+#| layout-ncol: 2
+p[[1]] + scale_colour_manual(values = condition_colours) + theme()
+p[[2]] + scale_colour_manual(values = treatment_colours) + theme()
+p[[3]] + scale_colour_manual(values = source_colours) + theme()
+p[[4]]
+```
+
+## Assessment of control dDNA spike-ins
+```{r display_dDNA_control}
+bind_rows(
+bind_cols(week = 2, 
+          de_res_control_w2 %>%  
+            filter(.feature == "dDNA_aligned") %>% # Only using dDNA control sequence  
+            as_tibble() %>%  
+            select(.feature, `edgeR LR FDR` = `edgerLR_FDR___TRUE - FALSE`, counts, dDNA.control) %>%
+  group_by(dDNA.control) %>% 
+  mutate(mean_counts = mean(counts)) %>% 
+  select(-counts) %>% 
+            distinct()  
+  ),
+bind_cols(week = 4, 
+          de_res_control_w4 %>%  
+            filter(.feature == "dDNA_aligned") %>% # Only using dDNA control sequence  
+            as_tibble() %>%  
+                        select(.feature, `edgeR LR FDR` = `edgerLR_FDR___TRUE - FALSE`, counts, dDNA.control) %>%
+  group_by(dDNA.control) %>% 
+  mutate(mean_counts = mean(counts)) %>% 
+  select(-counts) %>% 
+            distinct()
+  )
+) %>% 
+  knitr::kable(caption = "Statistical significance of control dDNA.")
+```
+
+## Differential abundance analyses
+
+### Comparing different sources of water
+```{r plotting_function_source}
+plot_de_res_source <- function(de_res, group = dna_integration){
+  
+top_features <- 
+  de_res %>% as_tibble() %>% filter(
+  `limma_voom_adj.P.Val___TRUE - FALSE` <= 0.01 &  
+    `edgerQLT_FDR___TRUE - FALSE` <= 0.01 &  
+    `edgerLR_FDR___TRUE - FALSE` <= 0.01) %>% select(.feature) %>% 
+  filter(.feature %in% group) %>% 
+    distinct() %>% pull()
+  
+if (length(top_features >= 1)) {
+annotation_dat <- 
+  de_res %>% 
+  filter(.feature %in% top_features) %>% 
+  as_tibble() %>% 
+  select(.feature, `edgerLR_FDR___TRUE - FALSE`, source, counts) %>%
+  distinct() %>% 
+  mutate(group1 = "anMBR", group2 = "aMBR",
+         FDR = round(`edgerLR_FDR___TRUE - FALSE`, digits = 5)) %>% 
+  group_by(.feature) %>% 
+  mutate(ypos = max(counts)) %>% 
+  select(-counts) %>% 
+    distinct()
+
+de_res %>%  
+  filter(.feature %in% top_features) %>% 
+  ggplot(aes(x = source, y = counts, fill = source)) +
+  geom_violin(alpha = 0.25, colour = NA) +
+  geom_jitter(aes(x = source, y = counts, colour = treatment, shape = condition)) +
+      add_pvalue(data = annotation_dat,
+               label = "FDR = {FDR}", 
+               y.position = "ypos", 
+               bracket.nudge.y = 0.2) +
+  facet_wrap(~ .feature, scales = "free_y", strip.position = "left") +
+  theme_bw() +
+  scale_fill_manual(values = source_colours) +
+  scale_color_manual(values = treatment_colours) +
+  scale_shape_manual(values = c("light" = 1, "dark" = 16))
+  } else {
+    print("No significant features to visualise")
+  } 
+}
+```
+
+
+```{r fig.width = 12, fig.height = 8}
+#| label: fig-compare_source_uptake_w2
+#| fig-cap: "Significant DNA uptake features when comparing two water sources at sampling week two." 
+plot_de_res_source(de_res_source_w2, group = dna_uptake)
+```
+```{r fig.width = 12, fig.height = 12}
+#| label: fig-compare_source_integration_w2
+#| fig-cap: "Significant DNA integration features when comparing two water sources at sampling week two." 
+plot_de_res_source(de_res_source_w2, group = dna_integration)
+```
+
+```{r fig.width = 3, fig.height = 4}
+#| label: fig-compare_source_uptake_w4
+#| fig-cap: "Significant DNA uptake features when comparing two water sources at sampling week four."
+plot_de_res_source(de_res_source_w4, group = dna_uptake)
+```
+
+```{r fig.width = 8, fig.height = 8}
+#| label: fig-compare_source_integration_w4
+#| fig-cap: "Significant DNA integration features when comparing two water sources at sampling week four."
+plot_de_res_source(de_res_source_w4, dna_integration)
+```
+
+### Comparing different conditions (light/dark)
+```{r plotting_function_condition, fig.height = 12, fig.width=12}
+plot_de_res_light <- function(de_res, group = dna_integration){
+  
+top_features <- 
+  de_res %>% as_tibble() %>% filter(
+  `limma_voom_adj.P.Val___TRUE - FALSE` <= 0.01 &  
+    `edgerQLT_FDR___TRUE - FALSE` <= 0.01 &  
+    `edgerLR_FDR___TRUE - FALSE` <= 0.01) %>% select(.feature) %>%  
+  filter(.feature %in% group) %>%  
+  distinct() %>% pull()
+ 
+if (length(top_features >= 1)) {
+annotation_dat <- 
+  de_res %>% 
+  filter(.feature %in% top_features) %>% 
+  as_tibble() %>% 
+  select(.feature, `edgerLR_FDR___TRUE - FALSE`, condition, counts) %>%
+  distinct() %>% 
+  mutate(group1 = "light", group2 = "dark",
+         FDR = round(`edgerLR_FDR___TRUE - FALSE`, digits = 3)) %>% 
+  group_by(.feature) %>% 
+  mutate(ypos = max(counts)) %>% 
+  select(-counts) %>% 
+  distinct()
+
+de_res %>%  
+  filter(.feature %in% top_features) %>% 
+  ggplot(aes(x = condition, y = counts, fill = condition)) +
+  geom_violin(alpha = 0.25, colour = NA) +
+  geom_jitter(aes(x = condition, y = counts, colour = treatment, shape = source)) +
+      add_pvalue(data = annotation_dat,
+               label = "FDR = {FDR}", 
+               y.position = "ypos", 
+               bracket.nudge.y = 0.2) +
+  facet_wrap(~ .feature, scales = "free_y", strip.position = "left") +
+  theme_bw() +
+  scale_fill_manual(values = condition_colours) +
+  scale_color_manual(values = treatment_colours)
+  } else {
+    print("No significant features to visualise")
+  } 
+}
+```
+
+```{r fig.width = 8, fig.height = 4}
+#| label: fig-compare_condition_uptake_w2
+#| fig-cap: "Significant DNA uptake features when comparing two conditions (dark/light) at sampling week two." 
+plot_de_res_light(de_res_light_w2, dna_uptake)
+```
+
+```{r fig.width = 12, fig.height = 12}
+#| label: fig-compare_condition_integration_w2
+#| fig-cap: "Significant DNA integration features when comparing two conditions (dark/light) at sampling week two." 
+plot_de_res_light(de_res_light_w2, dna_integration)
+```
+```{r fig.width = 8, fig.height = 10}
+#| label: fig-compare_condition_uptake_w4
+#| fig-cap: "Significant DNA uptake features when comparing two conditions (dark/light) at sampling week four." 
+plot_de_res_light(de_res_light_w4, dna_uptake)
+```
+```{r fig.width = 12, fig.height = 4}
+#| label: fig-compare_condition_integration_w4
+#| fig-cap: "Significant DNA integration features when comparing two conditions (dark/light) at sampling week four." 
+plot_de_res_light(de_res_light_w4, dna_integration)
+```
+
+### Comparing different treatment strategies (UV/chlorinated)
+```{r plotting_function_treatment, fig.height = 12, fig.width=12}
+plot_de_res_treatment <- function(de_res, group = dna_integration){
+  
+top_features <- 
+  de_res %>% as_tibble() %>% filter(
+  `limma_voom_adj.P.Val___TRUE - FALSE` <= 0.01 &  
+    `edgerQLT_FDR___TRUE - FALSE` <= 0.01 &  
+    `edgerLR_FDR___TRUE - FALSE` <= 0.01) %>%  
+    select(.feature) %>% 
+  filter(.feature %in% group) %>%  
+    distinct() %>% pull()
+
+if (length(top_features >= 1)) { 
+  annotation_dat <-  
+    de_res %>% 
+    filter(.feature %in% top_features) %>% 
+    as_tibble() %>% 
+    select(.feature, `edgerLR_FDR___TRUE - FALSE`, treatment, counts) %>%
+    distinct() %>% 
+    mutate(group1 = "chlorinated", group2 = "UV",
+           FDR = round(`edgerLR_FDR___TRUE - FALSE`, digits = 3)) %>% 
+    group_by(.feature) %>% 
+    mutate(ypos = max(counts)) %>% 
+    select(-counts) %>% 
+    distinct()
+
+  de_res %>%  
+    filter(.feature %in% top_features) %>% 
+    ggplot(aes(x = treatment, y = counts, fill = treatment)) +
+    geom_violin(alpha = 0.25, colour = NA) +
+    geom_jitter(aes(x = treatment, y = counts, colour = source, shape = condition)) +
+        add_pvalue(data = annotation_dat,
+                 label = "FDR = {FDR}", 
+                 y.position = "ypos", 
+                 bracket.nudge.y = 0.2) +
+    facet_wrap(~ .feature, scales = "free_y", strip.position = "left") +
+    theme_bw() +
+    scale_fill_manual(values = treatment_colours) +
+    scale_colour_manual(values = source_colours) +
+    scale_shape_manual(values = c("light" = 1, "dark" = 16))
+  } else {
+    print("No significant features to visualise")
+  } 
+}
+```
+
+```{r fig.width = 12, fig.height = 8}
+#| label: fig-compare_treatment_uptake_w2
+#| fig-cap: "Significant DNA uptake features when comparing two treatments (dark/light) at sampling week two." 
+plot_de_res_treatment(de_res_treatment_w2, dna_uptake)
+```
+```{r fig.width = 12, fig.height = 12}
+#| label: fig-compare_treatment_integration_w2
+#| fig-cap: "Significant DNA integration features when comparing two treatments (dark/light) at sampling week two." 
+plot_de_res_treatment(de_res_treatment_w2, dna_integration)
+```
+```{r fig.width = 12, fig.height = 10}
+#| label: fig-compare_treatment_uptake_w4
+#| fig-cap: "Significant DNA uptake features when comparing four treatments (dark/light) at sampling week four." 
+plot_de_res_treatment(de_res_treatment_w4, dna_uptake)
+```
+
+```{r fig.width = 8, fig.height = 8}
+#| label: fig-compare_treatment_integration_w4
+#| fig-cap: "Significant DNA integration features when comparing four treatments (dark/light) at sampling week four." 
+plot_de_res_treatment(de_res_treatment_w4, dna_integration)
+```
