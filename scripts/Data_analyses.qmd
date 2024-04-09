@@ -388,7 +388,7 @@ bind_cols(week = 2,
           de_res_control_w2 %>%  
             filter(.feature == "dDNA_aligned") %>% # Only using dDNA control sequence  
             as_tibble() %>%  
-            select(.feature, `edgeR LR FDR` = `edgerLR_FDR___TRUE - FALSE`, counts, dDNA.control) %>%
+            select(feature = .feature, `edgeR LR FDR` = `edgerLR_FDR___TRUE - FALSE`, counts, dDNA.control) %>%
   group_by(dDNA.control) %>% 
   mutate(mean_counts = mean(counts)) %>% 
   select(-counts) %>% 
@@ -398,13 +398,14 @@ bind_cols(week = 4,
           de_res_control_w4 %>%  
             filter(.feature == "dDNA_aligned") %>% # Only using dDNA control sequence  
             as_tibble() %>%  
-                        select(.feature, `edgeR LR FDR` = `edgerLR_FDR___TRUE - FALSE`, counts, dDNA.control) %>%
+                        select(feature = .feature, `edgeR LR FDR` = `edgerLR_FDR___TRUE - FALSE`, counts, dDNA.control) %>%
   group_by(dDNA.control) %>% 
   mutate(mean_counts = mean(counts)) %>% 
   select(-counts) %>% 
             distinct()
   )
 ) %>% 
+  mutate(`edgeR LR FDR` = formatC(`edgeR LR FDR`, format = "e", digits = 2)) %>%
   knitr::kable(caption = "Statistical significance of control dDNA.")
 ```
 
@@ -430,7 +431,7 @@ annotation_dat <-
   select(.feature, `edgerLR_FDR___TRUE - FALSE`, source, counts) %>%
   distinct() %>% 
   mutate(group1 = "anMBR", group2 = "aMBR",
-         FDR = round(`edgerLR_FDR___TRUE - FALSE`, digits = 5)) %>% 
+        FDR = formatC(`edgerLR_FDR___TRUE - FALSE`, format = "e", digits = 2)) %>%
   group_by(.feature) %>% 
   mutate(ypos = max(counts)) %>% 
   select(-counts) %>% 
@@ -440,11 +441,12 @@ de_res %>%
   filter(.feature %in% top_features) %>% 
   ggplot(aes(x = source, y = counts, fill = source)) +
   geom_violin(alpha = 0.25, colour = NA) +
-  geom_jitter(aes(x = source, y = counts, colour = treatment, shape = condition)) +
+  geom_jitter(aes(x = source, y = counts, colour = treatment, shape = condition), position = position_jitter(seed = 1)) +
+  ggrepel::geom_text_repel(aes(label = .sample, colour = treatment), fill = NA,  position = position_jitter(seed = 1)) +
       add_pvalue(data = annotation_dat,
                label = "FDR = {FDR}", 
                y.position = "ypos", 
-               bracket.nudge.y = 0.2) +
+               bracket.nudge.y = 0.5) +
   facet_wrap(~ .feature, scales = "free_y", strip.position = "left") +
   theme_bw() +
   scale_fill_manual(values = source_colours) +
@@ -455,7 +457,6 @@ de_res %>%
   } 
 }
 ```
-
 
 ```{r fig.width = 12, fig.height = 8}
 #| label: fig-compare_source_uptake_w2
@@ -482,6 +483,8 @@ plot_de_res_source(de_res_source_w4, dna_integration)
 
 ### Comparing different conditions (light/dark)
 ```{r plotting_function_condition, fig.height = 12, fig.width=12}
+de_res <- de_res_light_w2
+group = dna_integration
 plot_de_res_light <- function(de_res, group = dna_integration){
   
 top_features <- 
@@ -500,7 +503,7 @@ annotation_dat <-
   select(.feature, `edgerLR_FDR___TRUE - FALSE`, condition, counts) %>%
   distinct() %>% 
   mutate(group1 = "light", group2 = "dark",
-         FDR = round(`edgerLR_FDR___TRUE - FALSE`, digits = 3)) %>% 
+        FDR = formatC(`edgerLR_FDR___TRUE - FALSE`, format = "e", digits = 2)) %>%
   group_by(.feature) %>% 
   mutate(ypos = max(counts)) %>% 
   select(-counts) %>% 
@@ -510,11 +513,12 @@ de_res %>%
   filter(.feature %in% top_features) %>% 
   ggplot(aes(x = condition, y = counts, fill = condition)) +
   geom_violin(alpha = 0.25, colour = NA) +
-  geom_jitter(aes(x = condition, y = counts, colour = treatment, shape = source)) +
+  geom_jitter(aes(x = condition, y = counts, colour = treatment, shape = source), position = position_jitter(seed = 1)) +
+  ggrepel::geom_text_repel(aes(label = .sample, colour = treatment), fill = NA,  position = position_jitter(seed = 1)) +
       add_pvalue(data = annotation_dat,
                label = "FDR = {FDR}", 
                y.position = "ypos", 
-               bracket.nudge.y = 0.2) +
+               bracket.nudge.y = 0.5) +
   facet_wrap(~ .feature, scales = "free_y", strip.position = "left") +
   theme_bw() +
   scale_fill_manual(values = condition_colours) +
@@ -568,7 +572,7 @@ if (length(top_features >= 1)) {
     select(.feature, `edgerLR_FDR___TRUE - FALSE`, treatment, counts) %>%
     distinct() %>% 
     mutate(group1 = "chlorinated", group2 = "UV",
-           FDR = round(`edgerLR_FDR___TRUE - FALSE`, digits = 3)) %>% 
+           FDR = formatC(`edgerLR_FDR___TRUE - FALSE`, format = "e", digits = 2)) %>%
     group_by(.feature) %>% 
     mutate(ypos = max(counts)) %>% 
     select(-counts) %>% 
@@ -578,11 +582,12 @@ if (length(top_features >= 1)) {
     filter(.feature %in% top_features) %>% 
     ggplot(aes(x = treatment, y = counts, fill = treatment)) +
     geom_violin(alpha = 0.25, colour = NA) +
-    geom_jitter(aes(x = treatment, y = counts, colour = source, shape = condition)) +
+    geom_jitter(aes(x = treatment, y = counts, colour = source, shape = condition), position = position_jitter(seed = 1)) +
+    ggrepel::geom_text_repel(aes(label = .sample, colour = source), fill = NA,  position = position_jitter(seed = 1)) +
         add_pvalue(data = annotation_dat,
                  label = "FDR = {FDR}", 
                  y.position = "ypos", 
-                 bracket.nudge.y = 0.2) +
+                 bracket.nudge.y = 0.5) +
     facet_wrap(~ .feature, scales = "free_y", strip.position = "left") +
     theme_bw() +
     scale_fill_manual(values = treatment_colours) +
