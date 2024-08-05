@@ -1,0 +1,89 @@
+---
+title: "Prepare sequence catalogue quantification data"
+format: html
+---
+
+# Description
+This script consolidates the quantified sequence catalogue per-sample into a single table.
+
+```{r load_packages}
+library(tidyverse)
+library(rlang)
+```
+
+This script compiles the data before performing analyses.
+## Metatranscriptomics
+```{r read_sample_info}
+quant_folder <- 
+  '/Users/shaman.narayanasamy/Work/Data/soil_experiment/quantification'
+
+sample_table <-
+  list.dirs(path = quant_folder, full.names = F, recursive = FALSE) %>% 
+  as_tibble() %>% select(folder = value) %>% 
+  filter(!folder %in% c("salmon", "slurm", ".snakemake")) # Remove folders that are not related from list
+```
+```{r}
+## Raw counts
+for (f in 1:nrow(sample_table)){
+  sample_folder <- paste(sample_table$folder[f], "salmon", paste0(sample_table$folder[f], "_quant"), sep = '/')
+  sample_name <- sample_table$folder[f] 
+  print(sample_table$folder[f])
+  
+    tmp <- 
+      paste(quant_folder, sample_folder, "quant.sf", sep = '/') %>% 
+      read_tsv() %>% 
+      select(Name, Length, EffectiveLength, !!sample_name := NumReads)
+    
+  if (f == 1) { 
+    quant_dat <- tmp
+    
+  } else {
+      quant_dat <- 
+        tmp %>% 
+        select(-c(Length, EffectiveLength)) %>%  
+        full_join(quant_dat, tmp, by = "Name")
+  }
+    
+}
+
+quant_dat <- 
+  quant_dat %>% select(Name, Length, EffectiveLength, everything())
+```
+
+```{r}
+## Write table
+write_tsv(quant_dat, paste(quant_folder, "sequence_catalogue-raw_counts.tsv", sep = '/'))
+```
+
+```{r}
+##  counts
+for (f in 1:nrow(sample_table)){
+  sample_folder <- paste(sample_table$folder[f], "salmon", paste0(sample_table$folder[f], "_quant"), sep = '/')
+  sample_name <- sample_table$folder[f] 
+  print(sample_table$folder[f])
+  
+    tmp <- 
+      paste(quant_folder, sample_folder, "quant.sf", sep = '/') %>% 
+      read_tsv() %>% 
+      select(Name, Length, EffectiveLength, !!sample_name := TPM)
+    
+  if (f == 1) { 
+    quant_dat <- tmp
+    
+  } else {
+      quant_dat <- 
+        tmp %>% 
+        select(-c(Length, EffectiveLength)) %>%  
+        full_join(quant_dat, tmp, by = "Name")
+  }
+    
+}
+
+quant_dat <- 
+  quant_dat %>% select(Name, Length, EffectiveLength, everything())
+```
+
+```{r}
+## Write table
+write_tsv(quant_dat, paste(quant_folder, "sequence_catalogue-TPM.tsv", sep = '/'))
+```
