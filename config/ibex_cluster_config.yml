@@ -81,6 +81,13 @@ concoct:
     mem_gb: "200GB"
     time: "72:00:00"
 
+metabat2:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "100GB"
+    time: "72:00:00"
+
+
 cat_bat:
     nodes: 1
     ncpus: 40

@@ -1,15 +1,33 @@
-rule metabat2:
+rule get_depth_of_coverage:
     input:
-        fasta = "{sample}/megahit_assembly/final.contigs.fa",
-        bam = '{sample}/{sample}.reads.sorted.bam',
-        bai = '{sample}/{sample}.reads.sorted.bai'
+        bam = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam'),
+        bai = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam.bai')
     output:
-    params:
-        threads = config["metabat2"]["threads"]
+        depth_file = "{sample}/contig_depth.txt"
     conda: "../../../envs/metabat2_env.yml"
-    benchmark: os.path.join("{sample}/benchmarks/metabat2.txt")
-    log: os.path.join("{sample}/logs/metabat2.txt")
+    benchmark: "{sample}/benchmarks/jgi_summarize_bam_contig_depths.txt"
+    log: "{sample}/logs/jgi_summarize_bam_contig_depths.txt"
     shell:
         """
-	runMetaBat.sh -t {params.threads} -s 1000000 ./anmbr_8h/${PREFIX}_spades/${PREFIX}_spa.fa ./anmbr_8h/${PREFIX}_spades/${PREFIX}_1.bam
+	jgi_summarize_bam_contig_depths –outputDepth {output.depth_file} {input.bam}
+        """
+
+rule metabat2:
+    input:
+        fasta = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa"), 
+        bam = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam'),
+        bai = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam.bai'),
+        depth_file = "{sample}/contig_depth.txt"
+    output:
+        done = '{sample}/metabat2.done',
+    params:
+        threads = config["metabat2"]["threads"]
+        prefix = '{sample}/metabat2/metabat_bin_'
+    conda: "../../../envs/metabat2_env.yml"
+    benchmark: "{sample}/benchmarks/metabat2.txt"
+    log: "{sample}/logs/metabat2.txt"
+    shell:
+        """
+	runMetaBat.sh -t {params.threads} -m 1000 -a {input.depth_file} -o {params.prefix} {input.fasta} {input.bam}
+        touch {output.done}
         """
