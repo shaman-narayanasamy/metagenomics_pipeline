@@ -4,14 +4,15 @@ rule get_depth_of_coverage:
         bai = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam.bai')
     output:
         depth_file = "{sample}/contig_depth.txt",
-        min_contig_length = config["binning"]["min_contig_length"]
     conda: "../../../envs/metabat2_env.yml"
+    params:
+        min_contig_length = config["binning"]["min_contig_length"]
     benchmark: "{sample}/benchmarks/jgi_summarize_bam_contig_depths.txt"
     log: "{sample}/logs/jgi_summarize_bam_contig_depths.txt"
     shell:
         """
 	jgi_summarize_bam_contig_depths --outputDepth {output.depth_file} \
-        --minContigLength {params.min_contig_length}
+        --minContigLength {params.min_contig_length} \
         {input.bam}
         """
 
@@ -22,7 +23,7 @@ rule metabat2:
         bai = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam.bai'),
         depth_file = "{sample}/contig_depth.txt"
     output:
-        done = '{sample}/metabat2.done',
+        done = '{sample}/metabat2.done'
     params:
         threads = config["metabat2"]["threads"],
         min_contig_length = config["binning"]["min_contig_length"],
@@ -40,11 +41,3 @@ rule metabat2:
 
 	touch {output.done}
         """
-
-#runMetaBat.sh -t {params.threads} \
-#        -m {params.min_contig_length} \
-#        -a {input.depth_file} \
-#        -o {params.prefix} \
-#        {input.fasta} {input.bam}
-#
-

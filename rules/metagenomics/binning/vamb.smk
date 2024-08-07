@@ -13,11 +13,12 @@ rule vamb:
     log: os.path.join("{sample}/logs/vamb.txt")
     shell:
         """
+        rm -rf {output.outdir}
+
         vamb --outdir {output.outdir} \
         --fasta {input.fasta} \
         --jgi {input.depth_file} \
-        -m 1000 \
-        --cuda
+        -m 1000
 
         touch {output.done}
         """
