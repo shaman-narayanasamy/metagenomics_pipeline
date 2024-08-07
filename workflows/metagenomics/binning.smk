@@ -20,11 +20,20 @@ include:
 include:
     '../../rules/metagenomics/binning/metabat2.smk'
 
-#include:
-#    '../../rules/metagenomics/binning/maxbin2.smk'
+include:
+    '../../rules/metagenomics/binning/maxbin2.smk'
+
+include:
+    '../../rules/metagenomics/binning/vamb.smk'
+
+include:
+    '../../rules/metagenomics/binning/semibin.smk'
 
 rule all:
      input:
         expand("{sample}/concoct/bins", sample = samples.index),
-        expand("{sample}/metabat2.done", sample = samples.index)
+        expand("{sample}/metabat2.done", sample = samples.index),
+        expand("{sample}/maxbin2.done", sample = samples.index),
+        expand("{sample}/vamb.done", sample = samples.index),
+        expand("{sample}/semibin.done", sample = samples.index)
 

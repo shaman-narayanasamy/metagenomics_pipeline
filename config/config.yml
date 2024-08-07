@@ -25,15 +25,26 @@ salmon:
 mosdepth:
     threads: 12
 
+binning:
+  min_contig_length: 1000
+
 concoct:
     threads: 40
     read_length: 250
     contig_split_length: 1000
-    contig_min_length: 1000
 
 metabat2:
     threads: 24
-    contig_min_length: 1000
+
+maxbin2:
+    threads: 24
+
+vamb:
+    threads: 24
+
+semibin:
+    threads: 24
+    environment_type: "soil"
 
 cat_bat:
     threads: 40
