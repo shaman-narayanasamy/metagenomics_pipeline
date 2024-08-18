@@ -9,6 +9,7 @@ rule concoct_cut_contigs:
     params:
         contig_split_length = config["concoct"]["contig_split_length"]
     conda: "../../../envs/concoct_env.yml"
+    shadow: "shallow"
     benchmark: os.path.join("{sample}/benchmarks/concoct_cut_contigs.txt")
     log: os.path.join("{sample}/logs/concoct_cut_contigs.txt")
     shell:
@@ -26,6 +27,7 @@ rule concoct_coverage_table:
     params:
         contig_split_length = config["concoct"]["contig_split_length"]
     conda: "../../../envs/concoct_env.yml"
+    shadow: "shallow"
     benchmark: os.path.join("{sample}/benchmarks/concoct_coverage_table.txt")
     log: os.path.join("{sample}/logs/concoct_coverage_table.txt")
     shell:
@@ -43,12 +45,13 @@ rule concoct:
         threads = config["concoct"]["threads"],
         contig_min_length = config["binning"]["min_contig_length"]
     conda: "../../../envs/concoct_env.yml"
+    shadow: "shallow"
     benchmark: os.path.join("{sample}/benchmarks/concoct.txt")
     log: os.path.join("{sample}/logs/concoct.txt")
     shell:
         """
         concoct --composition_file {input.split_contigs_fasta} -l {params.contig_min_length} \
-        --coverage_file {input.coverage_table} -t {params.threads} -b {output.clustering_result}
+        --coverage_file {input.coverage_table} -t {params.threads} -b results
         """
 
 rule concoct_merge_clusters:
@@ -59,6 +62,7 @@ rule concoct_merge_clusters:
         merged_table = "{sample}/concoct/bins/clustering_merged.csv",
         bin_dir = directory("{sample}/concoct/bins")
     conda: "../../../envs/concoct_env.yml"
+    shadow: "shallow"
     benchmark: os.path.join("{sample}/benchmarks/concoct_merge_clusters.txt")
     log: os.path.join("{sample}/logs/concoct_merge_clusters.txt")
     shell:
@@ -67,3 +71,21 @@ rule concoct_merge_clusters:
         mkdir -p {output.bin_dir}
         extract_fasta_bins.py {input.fasta} {output.merged_table} --output_path {output.bin_dir}
         """
+
+rule concoct_contig_to_bin:
+    input:
+        bin_dir = "{sample}/concoct/bins"
+    output:
+        contig_to_bin="{sample}/concoct/contig_to_bin.tsv",
+    shadow: "shallow"
+    shell:
+       """
+       ls {input.bin_dir}/*.fa | \/
+       xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
+       head -n $(grep -c "^>" {{}})) <(grep "^>" {{}} | \
+       sed -e "s/>//g") <(yes "concoct" | \
+       head -n $(grep -c "^>" {{}}))' | \
+       sed -e 's/\.fa//g' > {output.contig_to_bin}
+       """
+
+

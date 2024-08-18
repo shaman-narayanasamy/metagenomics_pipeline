@@ -24,3 +24,18 @@ rule maxbin2:
 
         touch {output.done}
         """
+
+rule maxbin2_contig_to_bin:
+    input:
+        bin_dir = "{sample}/maxbin2"
+    output:
+        contig_to_bin="{sample}/maxbin2/contig_to_bin.tsv",
+    shell:
+       """
+       ls {input.bin_dir}/*.fasta | \
+       xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
+       head -n $(grep -c "^>" {{}})) <(grep "^>" {{}} | \
+       sed -e "s/>//g") <(yes "maxbin2" | \
+       head -n $(grep -c "^>" {{}}))' | \
+       sed -e 's/\.fasta//g' > {output.contig_to_bin}
+       """

@@ -6,7 +6,7 @@ rule semibin:
         depth_file = "{sample}/contig_depth.txt"
     output:
         done = '{sample}/semibin.done',
-        outdir = '{sample}/semibin'
+        outdir = directory('{sample}/semibin')
     params:
         tmpdir = config["tmp_dir"],
         threads = config["semibin"]["threads"],
@@ -17,7 +17,7 @@ rule semibin:
     log: "{sample}/logs/semibin2.txt"
     shell:
         """
-        SemiBin2 \ 
+        SemiBin2 \
         single_easy_bin \
         --tmpdir {params.tmpdir} \
         --engine auto \
@@ -29,3 +29,21 @@ rule semibin:
 
         touch {output.done}
         """
+
+rule semibin_contig_to_bin:
+    input:
+        bin_dir = "{sample}/semibin/output_bins"
+    output:
+        contig_to_bin="{sample}/semibin/contig_to_bin.tsv",
+    shadow: "shallow"
+    shell:
+       """
+       gunzip {input.bin_dir}/*.fa.gz
+
+       ls {input.bin_dir}/*.fa | \
+       xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
+       head -n $(grep -c "^>" {{}})) <(grep "^>" {{}} | \
+       sed -e "s/>//g") <(yes "semibin" | \
+       head -n $(grep -c "^>" {{}}))' | \
+       sed -e 's/\.fa//g' > {output.contig_to_bin}
+       """

@@ -26,4 +26,5 @@ include:
 
 rule all:
     input:
-        expand("{sample}/salmon/{sample}_quant", sample = samples.index)
+        expand("salmon/{sample}/{catalogue}/{sample}_quant", sample = samples.index, 
+                                                             catalogue=config["salmon"]["catalogues"].keys())

@@ -1,7 +1,7 @@
 ---
 tmp_dir: "/ibex/user/naras0c/tmp"
 output_dir: "/ibex/scratch/projects/c2188/soil_experiment"
-  #data_table: "/ibex/scratch/projects/c2188/soil_experiment/raw_data/version_01/meta/sample_table.tsv"
+#data_table: "/ibex/scratch/projects/c2188/soil_experiment/raw_data/version_01/meta/sample_table.tsv"
 data_table: "/ibex/scratch/projects/c2188/soil_experiment/public_datasets/metadata/input_table.tsv"
 gene_catalogue: "/ibex/scratch/projects/c2188/soil_experiment/reference_sequences/sequence_catalogue.fasta"
 input_dir:
@@ -20,7 +20,9 @@ sortmerna:
 
 salmon:
     min_assigned_frags: 1
-    gene_catalogue: "/ibex/scratch/projects/c2188/soil_experiment/reference_sequences/all_reference_sequences.fasta"
+    catalogues: 
+      transformation: "/ibex/scratch/projects/c2188/soil_experiment/reference_sequences/all_reference_sequences.fasta"
+      card_homolog: "/ibex/user/naras0c/databases/CARD/nucleotide_fasta_protein_homolog_model.fasta"
 
 mosdepth:
     threads: 12
@@ -45,6 +47,9 @@ vamb:
 semibin:
     threads: 24
     environment_type: "soil"
+
+magscot:
+    folder: "/home/naras0c/repositories/github/MAGScoT"        
 
 cat_bat:
     threads: 40
