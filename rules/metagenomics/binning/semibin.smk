@@ -43,7 +43,7 @@ rule semibin_contig_to_bin:
         ls {input.bin_dir}/output_bins/*.fa | \
         xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
         head -n $(grep -c "^>" {{}}) | \
-        sed -e "s:{input.bin_dir}::g") \
+        sed -e "s:{input.bin_dir}/output_bins/::g") \
         <(grep "^>" {{}} | \
         sed -e "s/>//g") <(yes "semibin" | \
         head -n $(grep -c "^>" {{}}))' | \
