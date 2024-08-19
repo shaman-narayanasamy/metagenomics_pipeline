@@ -51,7 +51,7 @@ rule concoct:
     shell:
         """
         concoct --composition_file {input.split_contigs_fasta} -l {params.contig_min_length} \
-        --coverage_file {input.coverage_table} -t {params.threads} -b results
+        --coverage_file {input.coverage_table} -t {params.threads} -b {wildcards.sample}/concoct/results
         """
 
 rule concoct_merge_clusters:
@@ -80,12 +80,14 @@ rule concoct_contig_to_bin:
     shadow: "shallow"
     shell:
        """
-       ls {input.bin_dir}/*.fa | \/
+       ls {input.bin_dir}/*.fa | \
        xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
        head -n $(grep -c "^>" {{}})) <(grep "^>" {{}} | \
        sed -e "s/>//g") <(yes "concoct" | \
        head -n $(grep -c "^>" {{}}))' | \
-       sed -e 's/\.fa//g' > {output.contig_to_bin}
+       sed -e 's/\.fa//g' \
+       sed -e 's:{wildcards.sample}/concoct/bins/::g' \
+       > {output.contig_to_bin}
        """
 
 

@@ -37,13 +37,15 @@ rule semibin_contig_to_bin:
         contig_to_bin="{sample}/semibin/contig_to_bin.tsv",
     shadow: "shallow"
     shell:
-       """
-       gunzip {input.bin_dir}/*.fa.gz
+        """
+        gunzip -k {input.bin_dir}/*.fa.gz
 
-       ls {input.bin_dir}/*.fa | \
-       xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
-       head -n $(grep -c "^>" {{}})) <(grep "^>" {{}} | \
-       sed -e "s/>//g") <(yes "semibin" | \
-       head -n $(grep -c "^>" {{}}))' | \
-       sed -e 's/\.fa//g' > {output.contig_to_bin}
-       """
+        ls {input.bin_dir}/*.fa | \
+        xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
+        head -n $(grep -c "^>" {{}}) | \
+        sed -e "s:{input.bin_dir}::g") \
+        <(grep "^>" {{}} | \
+        sed -e "s/>//g") <(yes "semibin" | \
+        head -n $(grep -c "^>" {{}}))' | \
+        sed -e 's/\.fa//g' > {output.contig_to_bin}
+        """

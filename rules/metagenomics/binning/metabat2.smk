@@ -26,7 +26,7 @@ rule metabat2:
     params:
         threads = config["metabat2"]["threads"],
         min_contig_length = config["binning"]["min_contig_length"],
-        prefix = '{sample}/metabat2/metabat_bin_'
+        prefix = '{sample}/metabat2/metabat_bin'
     shadow: "shallow"
     conda: "../../../envs/metabat2_env.yml"
     benchmark: "{sample}/benchmarks/metabat2.txt"
@@ -49,13 +49,13 @@ rule metabat2_contig_to_bin:
         contig_to_bin="{sample}/metabat2/contig_to_bin.tsv",
     shadow: "shallow"
     shell:
-       """
-       gunzip {input.bin_dir}/*.fa.gz
-
-       ls {input.bin_dir}/*.fa | \
-       xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
-       head -n $(grep -c "^>" {{}})) <(grep "^>" {{}} | \
-       sed -e "s/>//g") <(yes "metabat2" | \
-       head -n $(grep -c "^>" {{}}))' | \
-       sed -e 's/\.fa//g' > {output.contig_to_bin}
-       """
+        """
+        ls {input.bin_dir}/*.fa | \
+        xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
+        head -n $(grep -c "^>" {{}}) | \
+        sed -e "s:{input.bin_dir}/::g") \
+        <(grep "^>" {{}} | \
+        sed -e "s/>//g") <(yes "metabat2" | \
+        head -n $(grep -c "^>" {{}}))' | \
+        sed -e 's/\.fa//g' > {output.contig_to_bin}
+        """
