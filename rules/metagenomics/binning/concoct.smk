@@ -53,6 +53,7 @@ rule concoct:
         concoct --composition_file {input.split_contigs_fasta} -l {params.contig_min_length} \
         --coverage_file {input.coverage_table} -t {params.threads} -b {wildcards.sample}/concoct/results
         """
+        #--coverage_file {input.coverage_table} -t {params.threads} -b {wildcards.sample}/concoct/results
 
 rule concoct_merge_clusters:
     input:
@@ -74,20 +75,15 @@ rule concoct_merge_clusters:
 
 rule concoct_contig_to_bin:
     input:
-        bin_dir = "{sample}/concoct/bins"
+        merged_table = "{sample}/concoct/bins/clustering_merged.csv",
     output:
         contig_to_bin="{sample}/concoct/contig_to_bin.tsv",
     shadow: "shallow"
     shell:
-       """
-       ls {input.bin_dir}/*.fa | \
-       xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
-       head -n $(grep -c "^>" {{}})) <(grep "^>" {{}} | \
-       sed -e "s/>//g") <(yes "concoct" | \
-       head -n $(grep -c "^>" {{}}))' | \
-       sed -e 's/\.fa//g' \
-       sed -e 's:{wildcards.sample}/concoct/bins/::g' \
-       > {output.contig_to_bin}
-       """
+        """
+        paste <(cat {input.merged_table} | cut -f2 -d ',') \
+        <(cat {input.merged_table} | cut -f1 -d ',') | \
+        awk '{{print $0 "\tconcoct"}}' | tail -n +2 |  sort > {output.contig_to_bin}
+        """
 
 

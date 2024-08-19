@@ -32,15 +32,15 @@ rule semibin:
 
 rule semibin_contig_to_bin:
     input:
-        bin_dir = "{sample}/semibin/output_bins"
+        bin_dir = "{sample}/semibin"
     output:
         contig_to_bin="{sample}/semibin/contig_to_bin.tsv",
     shadow: "shallow"
     shell:
         """
-        gunzip -k {input.bin_dir}/*.fa.gz
+        gunzip -fk {input.bin_dir}/output_bins/*.fa.gz
 
-        ls {input.bin_dir}/*.fa | \
+        ls {input.bin_dir}/output_bins/*.fa | \
         xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
         head -n $(grep -c "^>" {{}}) | \
         sed -e "s:{input.bin_dir}::g") \
