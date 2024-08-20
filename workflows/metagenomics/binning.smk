@@ -38,8 +38,8 @@ include:
 include:
     '../../rules/metagenomics/binning/bin_refinement.smk'
 
-#include:
-#    '../../rules/metagenomics/binning/separate_bins.smk'
+include:
+    '../../rules/metagenomics/binning/separate_bins.smk'
 
 rule all:
      input:
@@ -49,4 +49,5 @@ rule all:
         expand("{sample}/semibin.done", sample = samples.index),
         #expand("{sample}/vamb.done", sample = samples.index),
         expand("{sample}/magscot/MAGScoT.refined.contig_to_bin.out", sample = samples.index),
-        expand("{sample}/magscot", sample = samples.index)
+        expand("{sample}/magscot", sample = samples.index),
+        expand("{sample}/magscot_bins", sample = samples.index)

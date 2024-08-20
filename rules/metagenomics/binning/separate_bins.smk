@@ -24,4 +24,3 @@ rule magscot_separate_bins:
 
          done
          """
-
