@@ -3,13 +3,12 @@ __default__:
     partition: "batch"
     nodes: 1
     ntasks: 1
-    ncpus: 1
+    ncpus: 6
     job-name: "{rule}"
     stdout: "slurm/%j.out"
     mail-user: "shaman.narayanasamy@kaust.edu.sa"
     qos: "normal"
     mem_gb: "16GB"
-    gpu: ""
 
 trimmomatic_trimming:
     nodes: 1
@@ -101,7 +100,6 @@ vamb:
     time: "72:00:00"
 
 semibin:
-    gpu: "gpu:1"
     nodes: 1
     ncpus: 24
     mem_gb: "100GB"

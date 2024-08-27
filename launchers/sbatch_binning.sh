@@ -5,11 +5,12 @@
 
 SMK_PRF=""
 SMK_FILE="workflows/metagenomics/binning.smk"
-SMK_JOBS=200 # USER SETTING: number of slurm jobs to be executed in parallel
+SMK_JOBS=100 # USER SETTING: number of slurm jobs to be executed in parallel
 SMK_ARG="$1" # ARG: add snakemake directives "--dry-run", "--touch" or "--unlock". Empty value will launch the analysis and other values will invoke an error.
 SMK_CONFIG="config/config.yml"
 SMK_SLURM_CONFIG="config/ibex_cluster_config.yml"
-SMK_CLUSTER_ARGS="sbatch -p {cluster.partition} -N {cluster.nodes} -n {cluster.ntasks} -c {cluster.ncpus} -t {cluster.time} --mem {cluster.mem_gb} --gres={cluster.gpu} --mail-user {cluster.mail-user} --job-name {cluster.job-name} --output {cluster.stdout}"
+#SMK_CLUSTER_ARGS="sbatch -p {cluster.partition} -N {cluster.nodes} -n {cluster.ntasks} -c {cluster.ncpus} -t {cluster.time} --mem {cluster.mem_gb} --gres={cluster.gpu} --mail-user {cluster.mail-user} --job-name {cluster.job-name} --output {cluster.stdout}"
+SMK_CLUSTER_ARGS="sbatch -p {cluster.partition} -N {cluster.nodes} -n {cluster.ntasks} -c {cluster.ncpus} -t {cluster.time} --mem {cluster.mem_gb} --mail-user {cluster.mail-user} --job-name {cluster.job-name} --output {cluster.stdout}"
 
 # Ativate snakemake
 #source ~/miniconda3/bin/activate snakemake
@@ -34,6 +35,7 @@ CMD="snakemake ${SMK_ARG} \
 	--configfile $SMK_CONFIG \
 	--conda-prefix /ibex/user/naras0c/conda-environments/ \
 	--use-conda \
+	--rerun-incomplete \
 	--conda-frontend mamba \
 	--jobs $SMK_JOBS \
 	--cluster-config ${SMK_SLURM_CONFIG} \
