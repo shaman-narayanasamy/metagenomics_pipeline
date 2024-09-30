@@ -1,3 +1,6 @@
+## Description
+This repository is a "fork" of my own repository for a different project.
+
 ## Data preparation
 Prepare a table with the  follwoing columns:
 1. sample\_ID -- shortened names of the samples
