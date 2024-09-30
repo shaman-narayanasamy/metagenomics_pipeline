@@ -1,0 +1,9 @@
+Bootstrap: docker
+From: python:3.9.19-bullseye
+
+%post
+    # Install vamb using pip
+    python -m pip install vamb
+
+%runscript
+    exec "$@"

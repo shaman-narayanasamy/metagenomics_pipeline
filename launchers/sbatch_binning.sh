@@ -35,6 +35,7 @@ CMD="snakemake ${SMK_ARG} \
 	--configfile $SMK_CONFIG \
 	--conda-prefix /ibex/user/naras0c/conda-environments/ \
 	--use-conda \
+	--use-singularity \
 	--rerun-incomplete \
 	--conda-frontend mamba \
 	--jobs $SMK_JOBS \

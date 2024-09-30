@@ -47,7 +47,7 @@ rule all:
         expand("{sample}/metabat2.done", sample = samples.index),
         expand("{sample}/maxbin2.done", sample = samples.index),
         expand("{sample}/semibin.done", sample = samples.index),
-        #expand("{sample}/vamb.done", sample = samples.index),
+        expand("{sample}/vamb.done", sample = samples.index),
         expand("{sample}/magscot/MAGScoT.refined.contig_to_bin.out", sample = samples.index),
         expand("{sample}/magscot", sample = samples.index),
         expand("{sample}/magscot_bins", sample = samples.index)
