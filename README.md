@@ -9,10 +9,11 @@ Prepare a table with the  follwoing columns:
 
 Here  is a nice command to  generate such a  table:
 ```{sh}
-cd /ibex/scratch/projects/c2188/soil_experiment/raw_data/version_01
+cd /ibex/project/e3015/fatima/Lane2/version_01
 
- echo -e 'sample_alias\tR1\tR2'; paste <(ls *R1_001.fastq.gz | cut -f2 -d "_") <(\ls $PWD/*R1_001.fastq.gz) <(\ls $PWD/*R1_001.fastq.gz | sed -e 's/_R1_/_R2_/g');}  > meta/sample_table.tsv
+paste <(echo -e 'sample_alias\tR1\tR2'; \ls *R1_001.fastq.gz | cut -d "_" -f2) <(echo; \ls $PWD/*R1_001.fastq.gz) <(echo; \ls $PWD/*R1_001.fastq.gz | sed -e 's/_R1_/_R2_/g') > /ibex/project/e3015/fatima/sample_table.tsv
 ```
+
 ## Reference sequence preparation
 Since we know specific sequences that we are interested in, we create a sequence database to perform reference-based
 analysis. To prepare the sequences for programs like salmon
@@ -23,9 +24,7 @@ appropriate format, specifically the headers:
 cat * | grep -v "^$" | sed -e 's/ /_/g'  > sequence_catalogue.fasta 
 ```
 
-
 ## Using the launcher
-
 To download the data, we can use the following script:
 ```{sh}
 scripts/download_data.sh <input metadata table> <download folder>

@@ -3,11 +3,11 @@ rule trimmomatic_trimming:
         read_1 = lambda wildcards: samples.loc[wildcards.sample, "R1"],
         read_2 = lambda wildcards: samples.loc[wildcards.sample, "R2"]
     output:
-        paired_read_1 = "{sample}/{sample}_R1.processed.fastq.gz",
-        paired_read_2 = "{sample}/{sample}_R2.processed.fastq.gz",
-        unpaired_read_1 = "{sample}/{sample}_R1.unpaired.processed.fastq.gz",
-        unpaired_read_2 = "{sample}/{sample}_R2.unpaired.processed.fastq.gz",
-        unpaired_read = "{sample}/{sample}_SE.processed.fastq.gz"
+        paired_read_1 = "{sample}/{sample}_R1.processed.filtered.fastq.gz",
+        paired_read_2 = "{sample}/{sample}_R2.processed.filtered.fastq.gz",
+        unpaired_read_1 = temp("{sample}/{sample}_unpaired_R1.processed.filtered.fastq.gz"),
+        unpaired_read_2 = temp("{sample}/{sample}_unpaired_R2.processed.filtered.fastq.gz")
+        unpaired_read = "{sample}/{sample}_SE.processed.filtered.fastq.gz"
     params:
         adapters=config['trimmomatic']['adapters_path']
     resources: 

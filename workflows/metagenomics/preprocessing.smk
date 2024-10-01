@@ -16,11 +16,11 @@ workdir:
 include:
     '../../rules/metagenomics/preprocessing/trimmomatic.smk'
 
-include:
-    '../../rules/metagenomics/preprocessing/sortmerna_index.smk'
-
-include:
-    '../../rules/metagenomics/preprocessing/sortmerna_filter.smk'
+#include:
+#    '../../rules/metagenomics/preprocessing/sortmerna_index.smk'
+#
+#include:
+#    '../../rules/metagenomics/preprocessing/sortmerna_filter.smk'
 
 rule all:
      input:
