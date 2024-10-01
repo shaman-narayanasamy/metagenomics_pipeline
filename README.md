@@ -1,5 +1,5 @@
 ## Description
-This repository is a "fork" of my own repository for a different project.
+This repository is a "fork" of my [own repository for a different project](https://github.com/shaman-narayanasamy/soil_experiment).
 
 ## Data preparation
 Prepare a table with the  follwoing columns:
