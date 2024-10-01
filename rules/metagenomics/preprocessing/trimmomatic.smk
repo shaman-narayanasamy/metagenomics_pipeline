@@ -6,7 +6,7 @@ rule trimmomatic_trimming:
         paired_read_1 = "{sample}/{sample}_R1.processed.filtered.fastq.gz",
         paired_read_2 = "{sample}/{sample}_R2.processed.filtered.fastq.gz",
         unpaired_read_1 = temp("{sample}/{sample}_unpaired_R1.processed.filtered.fastq.gz"),
-        unpaired_read_2 = temp("{sample}/{sample}_unpaired_R2.processed.filtered.fastq.gz")
+        unpaired_read_2 = temp("{sample}/{sample}_unpaired_R2.processed.filtered.fastq.gz"),
         unpaired_read = "{sample}/{sample}_SE.processed.filtered.fastq.gz"
     params:
         adapters=config['trimmomatic']['adapters_path']
