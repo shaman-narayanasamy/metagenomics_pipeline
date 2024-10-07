@@ -3,7 +3,7 @@ rule magscot_separate_bins:
         binning_results="{sample}/magscot/MAGScoT.refined.contig_to_bin.out",
         contigs_fasta = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa"), 
     output:
-        separate_bins=ensure(directory("{sample}/magscot_bins"), non_empty = True)
+        separate_bins=directory("{sample}/magscot_bins")
     conda: "../../../envs/pullseq_env.yml"
     benchmark: "{sample}/benchmarks/binning_separate_bins.txt"
     log: "{sample}/logs/binning_separate_bins.txt"
