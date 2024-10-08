@@ -52,7 +52,7 @@ semibin:
 magscot:
     folder: "/home/naras0c/repositories/github/MAGScoT"        
 
-cat_bat:
+catbat:
     threads: 40
     db_path:
       gtdb: "/ibex/reference/KSL/cat/20231120/20231120_CAT_gtdb/db"
