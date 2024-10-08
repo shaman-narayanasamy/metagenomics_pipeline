@@ -6,6 +6,9 @@ input_dir:
   mg_assembly_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/preprocessing/"
   mg_quantification_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/preprocessing"
   mg_binning_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/assembly/"
+  mg_dereplication_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/binning"
+  mg_annotation_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/dereplication"
+
 
 trimmomatic:
     adapters_path: "/ibex/user/naras0c/airport_surveillance/adapters.fa"
@@ -44,7 +47,7 @@ vamb:
 
 semibin:
     threads: 24
-    environment_type: "soil"
+    environment_type: "wastewater"
 
 magscot:
     folder: "/home/naras0c/repositories/github/MAGScoT"        
@@ -57,3 +60,16 @@ cat_bat:
     tx_path:
       gtdb: "/ibex/reference/KSL/cat/20231120/20231120_CAT_gtdb/tax"
       nr: "/ibex/reference/KSL/cat/20231120/20231120_CAT_nr/tax"
+    catpack_script: "/home/naras0c/repositories/github/CAT_pack/CAT_pack/CAT_pack"
+
+drep:
+    completeness: 75
+    contamination: 25
+    strain_heterogeneity_weight: 1
+    P_ani: 0.9
+    S_ani: 0.9
+
+bakta:
+    db_path: "/ibex/user/naras0c/databases/bakta/db"
+
+

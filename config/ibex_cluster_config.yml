@@ -105,9 +105,20 @@ semibin:
     mem_gb: "100GB"
     time: "72:00:00"
 
-cat_bat:
+catbat_classification:
     nodes: 1
     ncpus: 40
     mem_gb: "200GB"
     time: "120:00:00"
 
+drep_dereplication:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "200GB"
+    time: "5-00:00:00"
+
+bakta_annotation:
+    nodes: 1
+    ncpus: 12
+    mem_gb: "120GB"
+    time: "48:00:00"

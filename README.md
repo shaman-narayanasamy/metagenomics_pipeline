@@ -60,3 +60,12 @@ Binning:
 ```{sh}
 nohup launchers/sbatch_binning.sh > nohup_logs/binning_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &
 ```
+Dereplication:
+```{sh}
+nohup launchers/sbatch_dereplication.sh > nohup_logs/dereplication_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &
+```
+
+Annotation:
+```{sh}
+nohup launchers/sbatch_annotation.sh > nohup_logs/annotation_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &
+```
