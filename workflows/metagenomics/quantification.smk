@@ -8,7 +8,7 @@ tmp_dir = os.environ.get("tmp_dir", config['tmp_dir'])
 input_dir = config["input_dir"]["mg_quantification_input"]
 
 ## Define output directory
-output_dir = os.path.join(config['output_dir'],  "metagenomics", "quantification")
+output_dir = os.path.join(config['output_dir'], "metagenomics", "quantification")
 
 ## Define input files
 # Read the sample table

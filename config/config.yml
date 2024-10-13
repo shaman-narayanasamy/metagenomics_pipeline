@@ -4,10 +4,10 @@ output_dir: "/ibex/project/e3015/FLW_STG_multiomics/output"
 data_table: "/ibex/project/e3015/FLW_STG_multiomics/sample_table.tsv"
 input_dir:
   mg_assembly_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/preprocessing/"
-  mg_quantification_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/preprocessing"
   mg_binning_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/assembly/"
   mg_dereplication_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/binning"
   mg_annotation_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/dereplication"
+  mg_quantification_input: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/preprocessing"
 
 
 trimmomatic:
@@ -24,6 +24,10 @@ salmon:
     catalogues: 
       MAGs: "/ibex/project/e3015/FLW_STG_multiomics/output/reference_sequences/all_reference_sequences.fasta"
       genes: "/ibex/project/e3015/FLW_STG_multiomics/output/reference_sequences/all_reference_sequences.fasta"
+
+coverm:
+    genomes_dir: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/dereplication/dereplicated_bins/dereplicated_genomes"
+    threads: 24
 
 mosdepth:
     threads: 12

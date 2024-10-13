@@ -122,3 +122,9 @@ bakta_annotation:
     ncpus: 12
     mem_gb: "120GB"
     time: "48:00:00"
+
+coverm_genomes:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "120GB"
+    time: "120:00:00"

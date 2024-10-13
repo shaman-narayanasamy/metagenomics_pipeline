@@ -9,19 +9,9 @@ Prepare a table with the  follwoing columns:
 
 Here  is a nice command to  generate such a  table:
 ```{sh}
-cd /ibex/project/e3015/fatima/Lane2/version_01
+cd /ibex/project/e3015/FLW_STG_multiomics/Lane2/version_01
 
-paste <(echo -e 'sample_alias\tR1\tR2'; \ls *R1_001.fastq.gz | cut -d "_" -f2) <(echo; \ls $PWD/*R1_001.fastq.gz) <(echo; \ls $PWD/*R1_001.fastq.gz | sed -e 's/_R1_/_R2_/g') > /ibex/project/e3015/fatima/sample_table.tsv
-```
-
-## Reference sequence preparation
-Since we know specific sequences that we are interested in, we create a sequence database to perform reference-based
-analysis. To prepare the sequences for programs like salmon
-(pseudoalignment-based quantification), ensure that the fasta file is in
-appropriate format, specifically the headers: 
-
-```{sh}
-cat * | grep -v "^$" | sed -e 's/ /_/g'  > sequence_catalogue.fasta 
+paste <(echo -e 'sample_alias\tR1\tR2'; \ls *R1_001.fastq.gz | cut -d "_" -f2) <(echo; \ls $PWD/*R1_001.fastq.gz) <(echo; \ls $PWD/*R1_001.fastq.gz | sed -e 's/_R1_/_R2_/g') > /ibex/project/e3015/FLW_STG_multiomics/sample_table.tsv
 ```
 
 ## Using the launcher
