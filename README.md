@@ -46,11 +46,6 @@ Preprocessing:
 nohup launchers/sbatch_preprocessing.sh > nohup_logs/preprocessing_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &
 ```
 
-Quantification:
-```{sh}
-nohup launchers/sbatch_quantification.sh > nohup_logs/quantification_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &
-```
-
 Assembly:
 ```{sh}
 nohup launchers/sbatch_assembly.sh > nohup_logs/assembly_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &
@@ -69,3 +64,25 @@ Annotation:
 ```{sh}
 nohup launchers/sbatch_annotation.sh > nohup_logs/annotation_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &
 ```
+
+Prepare protein database:
+This step is performed manually where all the protein sequences from all MAGs are pasted into a single file.
+```{sh}
+## Append all to a single file:
+ls */*.faa | grep -v "hypotheticals" | xargs -I{} cat {} >> all_proteins.faa
+
+## Some sanity checks:
+### Check the total no of protein sequences in the all proteins file
+grep -c "^>" all_proteins.faa 
+1530223
+
+### Check if the sum of all proteins in individual MAGs equals to the one in the all proteins file
+ls */*.faa | grep -v "hypotheticals" | xargs -I{} grep -c "^>" {} | awk '{s+=$1} END {print s}'
+1530223
+```
+
+Quantification:
+```{sh}
+nohup launchers/sbatch_quantification.sh > nohup_logs/quantification_launch_$(date +'%Y%m%d_%H%M%S').log 2>&1 &
+```
+
