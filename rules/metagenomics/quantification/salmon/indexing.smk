@@ -1,26 +1,41 @@
 rule concatenate_all_seqs:
     input:
-        catalogue_path=config["salmon"]["catalogues"]
+        catalogue=lambda wildcards: config["salmon"]["catalogues"][wildcards.catalogue]['path'],
     output:
-        all_bins="all_bins.fna"
+        catalogue="salmon/{catalogue}/concatenated_catalogue.fa"
+    params:
+        extension=lambda wildcards: config["salmon"]["catalogues"][wildcards.catalogue]['extension']
     shell:
         """
-        cat {input}/*/*.fna > {output.all_bins}
+        if [ -d {input.catalogue} ]; then
+            echo "{input.catalogue} is a directory. Concatenating..."
+            cat {input.catalogue}/*/*.{params.extension} > {output.catalogue}
+        else
+            echo "{input.catalogue} is not a directory. Only soft-linking..."
+            ln -s {input.catalogue} {output.catalogue}
+        fi
         """
 
-rule index_all_mags:
+rule salmon_index_catalogue:
     input:
-        all_bins="all_bins.fna"
+        catalogue="salmon/{catalogue}/concatenated_catalogue.fa"
     output:
-        index_dir=directory("salmon/index/all_bins")
+        index_dir=directory("salmon/{catalogue}/index"),
+        fixed_fasta="salmon/{catalogue}/fixed.fasta"
     threads: 14
     conda: 
         "../../../../envs/salmon_env.yml"
     container:
         "https://depot.galaxyproject.org/singularity/salmon:1.8.0--h7e5ed60_1"
-    benchmark: "benchmarks/salmon/index/all.txt"
-    log: "log/salmon/index/all.log"
+    benchmark: "salmon/{catalogue}/benchmark/index.txt"
+    log: "salmon/{catalogue}/log/index.log"
     shell:
         """
-        salmon index -t {input.all_bins} -i {output.index_dir} --gencode -p {threads}
+        mkdir -p {output.index_dir}
+
+        cat {input.catalogue} | sed -e 's/ //g' | \
+        sed -e 's/|/_/g' > {output.fixed_fasta}
+
+        salmon index -t {output.fixed_fasta} \
+        -i {output.index_dir} --gencode -p {threads}
         """

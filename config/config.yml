@@ -19,16 +19,6 @@ sortmerna:
     contaminant_fasta_path: "/ibex/user/naras0c/genomes/cabbage/ncbi_dataset/data/GCF_000695525.1/GCF_000695525.1_BOL_genomic.fna"
     contamination_name: "cabbage_genome"
 
-salmon:
-    min_assigned_frags: 1
-    catalogues: 
-      MAGs: "/ibex/project/e3015/FLW_STG_multiomics/output/reference_sequences/all_reference_sequences.fasta"
-      genes: "/ibex/project/e3015/FLW_STG_multiomics/output/reference_sequences/all_reference_sequences.fasta"
-
-coverm:
-    genomes_dir: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/dereplication/dereplicated_bins/dereplicated_genomes"
-    threads: 24
-
 mosdepth:
     threads: 12
 
@@ -75,5 +65,19 @@ drep:
 
 bakta:
     db_path: "/ibex/user/naras0c/databases/bakta/db"
+
+salmon:
+    min_assigned_frags: 1
+    catalogues: 
+       MAG_annotation_dir: 
+         path: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/annotation/bakta"
+         extension: "ffn"
+       MAG_path_dir: 
+         path: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/dereplication/dereplicated_bins/dereplicated_genomes/"
+         extension: "fasta"
+
+coverm:
+    genomes_dir: "/ibex/project/e3015/FLW_STG_multiomics/output/metagenomics/dereplication/dereplicated_bins/dereplicated_genomes"
+    threads: 24
 
 

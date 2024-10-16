@@ -24,7 +24,13 @@ include:
 include:
     '../../rules/metagenomics/quantification/salmon/pseudoalignment.smk'
 
+include:
+    '../../rules/metagenomics/quantification/coverm/quantify_genome.smk'
+
 rule all:
     input:
-        expand("salmon/{sample}/{catalogue}/{sample}_quant", sample = samples.index, 
-                                                             catalogue=config["salmon"]["catalogues"].keys())
+        expand("salmon/{catalogue}/{sample}_quant", 
+               sample=samples.index,
+               catalogue=config["salmon"]["catalogues"].keys()),
+#        expand("salmon/{sample}_quant", sample = samples.index), 
+#        expand("coverm/{sample}", sample = samples.index)
