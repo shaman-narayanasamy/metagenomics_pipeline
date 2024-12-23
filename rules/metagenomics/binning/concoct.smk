@@ -1,8 +1,8 @@
 rule concoct_cut_contigs:
     input:
-        fasta = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa"), 
-        bam = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam'),
-        bai = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam.bai')
+        fasta = "{sample}/all_prokaryotic_seqs.fa",
+        bam = "{sample}/{sample}_metaG.reads.sorted.bam",
+        bai = "{sample}/{sample}_metaG.reads.sorted.bam.bai"
     output:
         split_contigs_fasta = "{sample}/concoct/split_contigs_len-%s.fa" % config["concoct"]["contig_split_length"],
         split_contigs_bed = "{sample}/concoct/split_contigs_len-%s.bed" % config["concoct"]["contig_split_length"]
@@ -20,8 +20,8 @@ rule concoct_cut_contigs:
 rule concoct_coverage_table:
     input:
         split_contigs_bed = "{sample}/concoct/split_contigs_len-%s.bed" % config["concoct"]["contig_split_length"],
-        bam = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam'),
-        bai = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam.bai')
+        bam = "{sample}/{sample}_metaG.reads.sorted.bam",
+        bai = "{sample}/{sample}_metaG.reads.sorted.bam.bai"
     output:
         coverage_table = "{sample}/concoct/split_contigs_len-%s_coverage_table.tsv" % config["concoct"]["contig_split_length"]
     params:
@@ -58,7 +58,7 @@ rule concoct:
 rule concoct_merge_clusters:
     input:
         clustering_result = "{sample}/concoct/results_clustering_gt%s.csv" % config["binning"]["min_contig_length"],
-        fasta = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa") 
+	fasta = "{sample}/all_prokaryotic_seqs.fa"
     output:
         merged_table = "{sample}/concoct/bins/clustering_merged.csv",
         bin_dir = directory("{sample}/concoct/bins")
@@ -85,5 +85,3 @@ rule concoct_contig_to_bin:
         <(cat {input.merged_table} | cut -f1 -d ',') | \
         awk '{{print $0 "\tconcoct"}}' | tail -n +2 |  sort > {output.contig_to_bin}
         """
-
-

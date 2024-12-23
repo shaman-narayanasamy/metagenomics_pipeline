@@ -4,7 +4,7 @@ rule salmon_quant:
         r1 = "%s/{sample}/{sample}_R1.processed.filtered.fastq.gz" % input_dir,
         r2 = "%s/{sample}/{sample}_R2.processed.filtered.fastq.gz" % input_dir
     output:
-        quant_dir = directory("salmon/{catalogue}/{sample}_quant")
+        quant_dir = directory("salmon/{catalogue}/{sample}/quant.sf")
     params:
         lib_type = "A",  # Automatic detection of library type. Adjust as necessary.
         min_assigned_frags = config['salmon']['min_assigned_frags']

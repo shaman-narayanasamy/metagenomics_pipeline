@@ -1,8 +1,8 @@
 rule vamb:
     input:
-        fasta = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa"), 
-        bam = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam'),
-        bai = os.path.join(input_dir, '{sample}/{sample}.reads.sorted.bam.bai'),
+        fasta = "{sample}/all_prokaryotic_seqs.fa",
+        bam = "{sample}/{sample}_metaG.reads.sorted.bam",
+        bai = "{sample}/{sample}_metaG.reads.sorted.bam.bai"
     output:
         outdir = directory('{sample}/vamb'),
         done = '{sample}/vamb.done'

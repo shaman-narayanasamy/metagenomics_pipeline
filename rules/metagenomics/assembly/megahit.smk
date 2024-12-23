@@ -1,8 +1,8 @@
 rule megahit:
     input:
-        filtered_paired_read_1 = os.path.join(input_dir, "{sample}/{sample}_R1.processed.filtered.fastq.gz"),
-        filtered_paired_read_2 = os.path.join(input_dir, "{sample}/{sample}_R2.processed.filtered.fastq.gz"),
-        filtered_unpaired_read = os.path.join(input_dir, "{sample}/{sample}_SE.processed.filtered.fastq.gz")
+        filtered_paired_read_1 = os.path.join(input_dir, "{sample}/{sample}_R1.processed.fastq.gz"),
+        filtered_paired_read_2 = os.path.join(input_dir, "{sample}/{sample}_R2.processed.fastq.gz"),
+        filtered_unpaired_read = os.path.join(input_dir, "{sample}/{sample}_SE.processed.fastq.gz")
     output:
         assembly_fasta="{sample}/megahit_assembly/final.contigs.fa",
     resources: 
@@ -22,3 +22,16 @@ rule megahit:
        --presets meta-large \
        --continue
        """ 
+
+rule rename_contigs:
+    input:
+        assembly_fasta="{sample}/megahit_assembly/final.contigs.fa",
+    output:
+        assembly_fasta="{sample}/{sample}.assembly_contigs.fa",
+    shell:
+        """
+        sample_id="{wildcards.sample}"
+        
+	awk -v id="${{sample_id}}" '/^>/ {{print ">" id "_contig_" substr($1, 2); next}} 1' \
+        {input.assembly_fasta} > {output.assembly_fasta}
+        """

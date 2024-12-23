@@ -1,6 +1,6 @@
 rule maxbin2:
     input:
-        fasta = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa"), 
+        fasta = "{sample}/all_prokaryotic_seqs.fa",
         depth_file = "{sample}/contig_depth.txt"
     output:
         done = '{sample}/maxbin2.done',
@@ -35,7 +35,7 @@ rule maxbin2_contig_to_bin:
        ls {input.bin_dir}/*.fasta | \
        xargs -I{{}} bash -c 'paste <(yes "{{}}" | \
        head -n $(grep -c "^>" {{}}) | \
-       sed -e "s:{input.bin_dir}::g") \
+       sed -e "s:{input.bin_dir}/::g") \
        <(grep "^>" {{}} | \
        sed -e "s/>//g") <(yes "maxbin2" | \
        head -n $(grep -c "^>" {{}}))' | \

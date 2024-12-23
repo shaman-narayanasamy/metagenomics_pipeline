@@ -1,2 +1,4 @@
 01/10/2024
 - Update preprocessing rules (remove contaminant filtering step, as it is not relevant)
+22/11/2024
+- Update binning worflow to include contig sorting (DeepMicroClass) and multi-sample binning using SemiBin2

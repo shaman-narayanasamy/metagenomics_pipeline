@@ -20,9 +20,9 @@ rule bwa_index_assembly:
 
 rule bwa_mapping_on_assembly:
     input:
-        r_1 = os.path.join(input_dir, "{sample}/{sample}_R1.processed.filtered.fastq.gz"),
-        r_2 = os.path.join(input_dir, "{sample}/{sample}_R2.processed.filtered.fastq.gz"),
-        r_se = os.path.join(input_dir, "{sample}/{sample}_SE.processed.filtered.fastq.gz"),
+        r_1 = os.path.join(input_dir, "{sample}/{sample}_R1.processed.fastq.gz"),
+        r_2 = os.path.join(input_dir, "{sample}/{sample}_R2.processed.fastq.gz"),
+        r_se = os.path.join(input_dir, "{sample}/{sample}_SE.processed.fastq.gz"),
         assembly="{sample}/megahit_assembly/final.contigs.fa",
         assembly_amb="{sample}/megahit_assembly/final.contigs.fa.amb",
         assembly_bwt="{sample}/megahit_assembly/final.contigs.fa.bwt",

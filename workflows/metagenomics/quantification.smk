@@ -29,7 +29,7 @@ include:
 
 rule all:
     input:
-        expand("salmon/{catalogue}/{sample}_quant", 
+        expand("salmon/{catalogue}/{sample}/quant.sf", 
                sample=samples.index,
                catalogue=config["salmon"]["catalogues"].keys()),
 #        expand("salmon/{sample}_quant", sample = samples.index), 

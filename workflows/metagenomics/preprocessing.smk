@@ -8,7 +8,8 @@ output_dir = os.path.join(config['output_dir'],  "metagenomics", "preprocessing"
 
 ## Define input files
 # Read the sample table
-samples = pd.read_table(config["data_table"], sep="\t", comment = "#").set_index("sample_alias", drop=False)
+samples = pd.read_table(config["data_table"], sep="\t", comment="#", dtype={"sample_alias": str})
+samples.set_index("sample_alias", drop=False, inplace=True)
 
 workdir:
     output_dir
@@ -16,14 +17,8 @@ workdir:
 include:
     '../../rules/metagenomics/preprocessing/trimmomatic.smk'
 
-#include:
-#    '../../rules/metagenomics/preprocessing/sortmerna_index.smk'
-#
-#include:
-#    '../../rules/metagenomics/preprocessing/sortmerna_filter.smk'
-
 rule all:
      input:
-        expand("{sample}/{sample}_SE.processed.filtered.fastq.gz", sample = samples.index), 
-        expand("{sample}/{sample}_R1.processed.filtered.fastq.gz", sample = samples.index),
-        expand("{sample}/{sample}_R2.processed.filtered.fastq.gz", sample = samples.index)
+        expand("{sample}/{sample}_SE.processed.fastq.gz", sample = samples.index), 
+        expand("{sample}/{sample}_R1.processed.fastq.gz", sample = samples.index),
+        expand("{sample}/{sample}_R2.processed.fastq.gz", sample = samples.index)

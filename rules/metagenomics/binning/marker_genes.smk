@@ -1,6 +1,6 @@
 rule magscot_marker_genes:
     input:
-        contigs = os.path.join(input_dir, "{sample}/megahit_assembly/final.contigs.fa"), 
+        contigs = "{sample}/all_prokaryotic_seqs.fa"
     output:
         faa = "{sample}/prodigal.faa",
         ffn = "{sample}/prodigal.fna",
