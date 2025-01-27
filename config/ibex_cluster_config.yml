@@ -3,7 +3,7 @@ __default__:
     partition: "batch"
     nodes: 1
     ntasks: 1
-    ncpus: 6
+    ncpus: 1
     job-name: "{rule}"
     stdout: "slurm/%j.out"
     mail-user: "shaman.narayanasamy@kaust.edu.sa"
@@ -16,19 +16,37 @@ trimmomatic_trimming:
     mem_gb: "100GB"
     time: "72:00:00"
 
+index_all_transcripts:
+    nodes: 1
+    ncpus: 14
+    mem_gb: "100GB"
+    time: "48:00:00"
+
 sortmerna_index_database:
     nodes: 1
     ncpus: 14
     mem_gb: "200GB"
     time: "48:00:00"
 
-sortmerna_filter_paired:
+sortmerna_rrna_paired:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "500GB"
+    time: "120:00:00"
+
+sortmerna_rrna_single:
+    nodes: 1
+    ncpus: 12
+    mem_gb: "150GB"
+    time: "48:00:00"
+
+sortmerna_human_paired:
     nodes: 1
     ncpus: 32
     mem_gb: "500GB"
     time: "120:00:00"
 
-sortmerna_filter_single:
+sortmerna_human_single:
     nodes: 1
     ncpus: 12
     mem_gb: "150GB"
@@ -43,7 +61,7 @@ megahit:
 bwa_index_assembly:
     nodes: 1
     ncpus: 6
-    mem_gb: "100GB"
+    mem_gb: "120GB"
     time: "48:00:00"
 
 bwa_mapping_on_assembly:
@@ -64,16 +82,66 @@ flagstat_assembly_bam:
     mem_gb: "100GB"
     time: "48:00:00"
 
-mosdepth:
+virsorter2:
     nodes: 1
-    ncpus: 12
+    ncpus: 24
+    mem_gb: "200GB"
+    time: "120:00:00"
+
+genomad:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "200GB"
+    time: "120:00:00"
+
+crisprcasfinder:
+    nodes: 1
+    ncpus: 24
     mem_gb: "120GB"
-    time: "72:00:00"
+    time: "14-0:00:00"
+
+coverm:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "120GB"
+    time: "5-0:00:00"
+
+catbat_classification:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "500GB"
+    time: "120:00:00"
+    partition: "largemem"
+
+catbat_summary:
+    nodes: 1
+    ncpus: 6
+    time: "6:00:00"
+
+penguin_assembly:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "1000GB"
+    time: "120:00:00"
 
 salmon_quant_all:
     nodes: 1
     ncpus: 14
     time: "48:00:00"
+
+deepmicroclass_predict:
+    nodes: 1
+    ncpus: 2
+    gres: "v100:1"
+    mem_gb: "128GB"
+    time: "72:00:00"
+
+deepmicroclass_extract:
+    nodes: 1
+    ncpus: 2
+    gres: "v100:1"
+    mem_gb: "64GB"
+    time: "6:00:00"
 
 concoct:
     nodes: 1
@@ -102,7 +170,7 @@ vamb:
 semibin:
     nodes: 1
     ncpus: 24
-    mem_gb: "100GB"
+    mem_gb: "250GB"
     time: "72:00:00"
 
 catbat_classification:
@@ -113,9 +181,9 @@ catbat_classification:
 
 drep_dereplication:
     nodes: 1
-    ncpus: 24
-    mem_gb: "200GB"
-    time: "5-00:00:00"
+    ncpus: 36
+    mem_gb: "500GB"
+    time: "8-00:00:00"
 
 bakta_annotation:
     nodes: 1
@@ -126,5 +194,35 @@ bakta_annotation:
 coverm_genomes:
     nodes: 1
     ncpus: 24
-    mem_gb: "120GB"
+    mem_gb: "240GB"
     time: "120:00:00"
+
+semibin_multi_sample_get_abundance:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "250GB"
+    time: "120:00:00"
+
+semibin_multi_sample_split_contigs:
+    nodes: 1
+    ncpus: 12
+    mem_gb: "100GB"
+    time: "72:00:00"
+
+semibin_multi_sample:
+    nodes: 1
+    ncpus: 36
+    mem_gb: "500GB"
+    time: "8-0:00:00"
+
+crass:
+    nodes: 1
+    ncpu: 12
+    mem_gb: "120GB" 
+    time: "24:00:00"
+
+mmseqs2:
+    nodes: 1
+    ncpu: 24
+    mem_gb: "250GB" 
+    time: "8-0:00:00"
