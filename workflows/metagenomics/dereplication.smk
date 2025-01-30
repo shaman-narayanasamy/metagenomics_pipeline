@@ -16,7 +16,7 @@ tmp_dir = os.environ.get("tmp_dir", config['tmp_dir'])
 input_dir = os.environ.get("input_dir", config['input_dir']['mg_dereplication_input'])
 
 ## Define output directory
-output_dir = os.path.join(os.environ.get("output_dir", config['output_dir']), "metagenomics", "dereplication")
+output_dir = os.path.join(os.environ.get("output_dir", config['output_dir']), "dereplication")
 
 ## Define samples
 # Read the sample table

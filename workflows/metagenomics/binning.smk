@@ -64,5 +64,4 @@ rule all:
 	expand("{sample}/DeepMicroClass/prokaryotic_viruses.fa", sample = samples.index),
 	expand("{sample}/DeepMicroClass/eukaryotic_viruses.fa", sample = samples.index),
 	expand("{sample}/DeepMicroClass/plasmids.fa", sample = samples.index),
-        expand('semibin_multi_sample/{sample}_metaG.reads.sorted.bam', sample = samples.index),
-        expand('semibin_multi_sample/{sample}_contig_to_bin.tsv', sample = samples.index)
+        expand('semibin_multi_sample/contigs_to_bins/{sample}_contig_to_bin.tsv', sample = samples.index)

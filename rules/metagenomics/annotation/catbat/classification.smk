@@ -10,8 +10,6 @@ rule catbat_classification:
     threads: 40
     conda: 
         "../../../../envs/catbat_env.yml"
-    container:
-        "/ibex/user/naras0c/singularity/catbat/catbat.simg"
     shadow: "shallow"
     benchmark: "catbat/benchmarks/{db_name}_catbat_annotation.txt"
     log: "catbat/logs/{db_name}_catbat_annotation.txt"
@@ -52,7 +50,17 @@ rule catbat_summary:
     log: "catbat/logs/{db_name}_catbat_summary.txt"
     shell: 
         """        
+        db_name="{wildcards.db_name}"
+
+        if [[ $db_name == "gtdb" ]]; then
+
+        touch {output.bin_classification_names_added} 
+
+        else
+
         {params.catpack_script} add_names -i {input.bin_classification} -o {output.bin_classification_names_added} -t {params.tx_path} --only_official
+
+        fi 
 
         touch {output.donefile}
         """

@@ -17,7 +17,7 @@ tmp_dir = os.environ.get("tmp_dir", config['tmp_dir'])
 input_dir = os.environ.get("input_dir", config['input_dir']['mg_annotation_input'])
 
 ## Define output directory
-output_dir = os.path.join(config['output_dir'], "metagenomics", "annotation")
+output_dir = os.path.join(config['output_dir'], "annotation")
 
 ## Get path to directory containing all the bins
 bin_directory = os.path.join(config['input_dir']['mg_annotation_input'], "dereplicated_bins", "dereplicated_genomes")
