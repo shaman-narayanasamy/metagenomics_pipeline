@@ -1,11 +1,26 @@
+rule prepare_custom_bakta_db:
+    output:
+        custom_db = temp("bakta/custom_proteins.fasta")
+    params:
+        custom_dbs = " ".join(config['bakta']['custom_dbs'].values()) if config['bakta']['custom_dbs'] else None
+    shell:
+        """
+        if [ ! -z "{params.custom_dbs}" ]; then
+            cat {params.custom_dbs} > {output.custom_db}
+        else
+            touch {output.custom_db}  # Create an empty file to avoid errors
+        fi
+        """
+
 rule bakta_annotation:
     input:
-        bin_fasta = "%s/dereplicated_bins/dereplicated_genomes/{bin_id}.fasta" % input_dir
+        bin_fasta = "%s/dereplicated_bins/dereplicated_genomes/{bin_id}.fasta" % input_dir,
+        custom_db = "bakta/custom_proteins.fasta"
     output:
         donefile = "bakta/{bin_id}/bakta.done",
         out_dir = directory("bakta/{bin_id}")
     params: 
-        db_path=config['bakta']['db_path']
+        db_path=config['bakta']['db_path'],
     threads: 12
     conda: 
         "../../../../envs/bakta_env.yml"
@@ -13,11 +28,13 @@ rule bakta_annotation:
     log: "bakta/{bin_id}/logs/bakta_annotation.txt"
     shell: 
         """ 
-        bakta {input.bin_fasta} --force --db {params.db_path} \
+        PROTEIN_ARG=""
+        if [ -s {input.custom_db} ]; then
+            PROTEIN_ARG="--proteins {input.custom_db}"
+        fi
+
+        bakta {input.bin_fasta} --force --db {params.db_path} $PROTEIN_ARG \
         --output {output.out_dir}/ --prefix {wildcards.bin_id} -t {threads} \
         --keep-contig-headers
         touch {output.donefile}
         """
-
-#    container:
-#        "docker://oschwengers/bakta:latest"
