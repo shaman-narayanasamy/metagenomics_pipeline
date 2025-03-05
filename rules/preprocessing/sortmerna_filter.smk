@@ -14,11 +14,11 @@ rule sortmerna_filter_paired:
         out_prefix_paired = "{sample}/{sample}_paired.non_contaminant", # output prefix for paired reads
         workdir=temp(directory("/tmp/{sample}/{sample}_paired_sortmerna_workdir"))
     resources:
-        cpus_per_task=24,
-        runtime=4320
+        cpus_per_task = 24,
+        runtime = 7200,
+        mem = "500GB",
     conda: "../../../envs/sortmerna_env.yml"
     benchmark: "{sample}/benchmarks/preprocessing_filtering_paired.txt"
-    #log: "{sample}/logs/preprocessing_filtering_paired.txt"
     shell: 
         """ 
         # Run SortMeRNA for paired-end reads
@@ -56,8 +56,9 @@ rule sortmerna_filter_single:
         out_prefix_unpaired = "{sample}/{sample}_SE.non_contaminant", # output prefix for unpaired reads
         workdir=temp(directory("/tmp/{sample}/{sample}_unpaired_sortmerna_workdir"))
     resources:
-        cpus_per_task=12,
-        runtime=2880,
+        cpus_per_task = 24,
+        runtime = 2880,
+        mem = "150GB"
     conda: "../../../envs/sortmerna_env.yml"
     benchmark: "{sample}/benchmarks/preprocessing_filtering_single.txt"
     log: "{sample}/logs/preprocessing_filtering_single.txt"

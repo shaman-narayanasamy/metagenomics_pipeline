@@ -11,11 +11,11 @@ rule trimmomatic_trimming:
     params:
         adapters=config['trimmomatic']['adapters_path']
     resources: 
-        cpus_per_task=12,
-        runtime=2880
+        cpus_per_task = 12,
+        runtime = 4320,  # 72 hours 
+        mem = "100GB"
     conda: "../../../envs/trimmomatic_env.yml"
-    benchmark: os.path.join(output_dir, "{sample}/benchmarks/preprocessing_trimming.txt")
-    #log: os.path.join(output_dir, "{sample}/logs/preprocessing_trimming.txt")
+    benchmark: "{sample}/benchmarks/preprocessing_trimming.txt"
     shell: 
         """ 
         trimmomatic PE -phred33 \

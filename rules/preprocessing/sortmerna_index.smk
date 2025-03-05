@@ -7,8 +7,9 @@ rule sortmerna_prepare_sequences:
     params: 
         filter_length=config['sortmerna']['filter_length'],
     resources:
-        cpus_per_task=4,
-        runtime=2880
+        cpus_per_task = 12,
+        runtime = 2880,
+        mem = "120GB"
     conda: "../../../envs/pullseq_env.yml"
     benchmark: "benchmarks/pullseq_filter_length.txt"
     log: "logs/pullseq_filter_length.txt"
@@ -27,8 +28,9 @@ rule sortmerna_index_database:
     params: 
         db_path=config['sortmerna']['db_path'],
     resources:
-        cpus_per_task=12,
-        runtime=4320
+        cpus_per_task = 24,
+        runtime = 4320,
+        mem = "200GB" 
     conda: "../../../envs/sortmerna_env.yml"
     benchmark: "benchmarks/sortmerna_index_database.txt"
     log: "logs/sortmerna_index_database.txt"
@@ -42,4 +44,3 @@ rule sortmerna_index_database:
 
         touch {output.donefile}
 	"""
-
