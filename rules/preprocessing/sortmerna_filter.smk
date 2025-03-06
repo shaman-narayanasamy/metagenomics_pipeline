@@ -17,7 +17,7 @@ rule sortmerna_filter_paired:
         cpus_per_task = 24,
         runtime = 7200,
         mem = "500GB",
-    conda: "../../../envs/sortmerna_env.yml"
+    conda: "../../envs/sortmerna_env.yml"
     benchmark: "{sample}/benchmarks/preprocessing_filtering_paired.txt"
     shell: 
         """ 
@@ -59,7 +59,7 @@ rule sortmerna_filter_single:
         cpus_per_task = 24,
         runtime = 2880,
         mem = "150GB"
-    conda: "../../../envs/sortmerna_env.yml"
+    conda: "../../envs/sortmerna_env.yml"
     benchmark: "{sample}/benchmarks/preprocessing_filtering_single.txt"
     log: "{sample}/logs/preprocessing_filtering_single.txt"
     shell: 

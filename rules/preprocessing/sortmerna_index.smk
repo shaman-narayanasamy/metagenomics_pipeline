@@ -10,7 +10,7 @@ rule sortmerna_prepare_sequences:
         cpus_per_task = 12,
         runtime = 2880,
         mem = "120GB"
-    conda: "../../../envs/pullseq_env.yml"
+    conda: "../../envs/pullseq_env.yml"
     benchmark: "benchmarks/pullseq_filter_length.txt"
     log: "logs/pullseq_filter_length.txt"
     shell: 
@@ -31,7 +31,7 @@ rule sortmerna_index_database:
         cpus_per_task = 24,
         runtime = 4320,
         mem = "200GB" 
-    conda: "../../../envs/sortmerna_env.yml"
+    conda: "../../envs/sortmerna_env.yml"
     benchmark: "benchmarks/sortmerna_index_database.txt"
     log: "logs/sortmerna_index_database.txt"
     shell: 

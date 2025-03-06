@@ -14,7 +14,7 @@ rule trimmomatic_trimming:
         cpus_per_task = 12,
         runtime = 4320,  # 72 hours 
         mem = "100GB"
-    conda: "../../../envs/trimmomatic_env.yml"
+    conda: "../../envs/trimmomatic_env.yml"
     benchmark: "{sample}/benchmarks/preprocessing_trimming.txt"
     shell: 
         """ 
