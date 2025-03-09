@@ -2,7 +2,7 @@ rule prepare_custom_bakta_db:
     output:
         custom_db = temp("bakta/custom_proteins.fasta")
     params:
-        custom_dbs = " ".join(config['bakta']['custom_dbs'].values()) if config['bakta']['custom_dbs'] else None
+        custom_dbs = " ".join(config['bakta'].get('custom_dbs', {}).values()) if 'custom_dbs' in config['bakta'] else None
     shell:
         """
         if [ ! -z "{params.custom_dbs}" ]; then
