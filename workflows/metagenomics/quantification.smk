@@ -14,6 +14,10 @@ output_dir = os.path.join(config['output_dir'], "metagenomics", "quantification"
 # Read the sample table
 samples = pd.read_table(config["data_table"], sep="\t", comment = "#").set_index("sample_alias", drop=False)
 
+# Construct a list of catalogues from the config file
+#catalogues = list(config["quantification"]["catalogues"].keys())
+catalogues = config["quantification"]["catalogues"]
+
 workdir:
     output_dir
 
@@ -24,13 +28,14 @@ include:
 include:
     '../../rules/metagenomics/quantification/salmon/pseudoalignment.smk'
 
-include:
-    '../../rules/metagenomics/quantification/coverm/quantify_genome.smk'
+#include:
+#    '../../rules/metagenomics/quantification/coverm/quantify_genome.smk'
 
 rule all:
     input:
         expand("salmon/{catalogue}/{sample}/quant.sf", 
                sample=samples.index,
-               catalogue=config["salmon"]["catalogues"].keys()),
+               catalogue=catalogues.keys()),
+
 #        expand("salmon/{sample}_quant", sample = samples.index), 
 #        expand("coverm/{sample}", sample = samples.index)
