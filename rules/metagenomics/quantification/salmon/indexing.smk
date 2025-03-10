@@ -1,6 +1,5 @@
 rule salmon_index_catalogue:
     input:
-        #catalogue="{catalogue}/concatenated_catalogue.fa"
         catalogue = lambda wildcards: config["quantification"]["catalogues"][wildcards.catalogue]
     output:
         index_dir=directory("salmon/{catalogue}/index"),
