@@ -1,8 +1,8 @@
 rule megahit:
     input:
-        filtered_paired_read_1 = os.path.join(input_dir, "{sample}/{sample}_R1.processed.fastq.gz"),
-        filtered_paired_read_2 = os.path.join(input_dir, "{sample}/{sample}_R2.processed.fastq.gz"),
-        filtered_unpaired_read = os.path.join(input_dir, "{sample}/{sample}_SE.processed.fastq.gz")
+        filtered_paired_read_1 = os.path.join(input_dir, "{sample}/{sample}_R1.processed.filtered.fastq.gz"),
+        filtered_paired_read_2 = os.path.join(input_dir, "{sample}/{sample}_R2.processed.filtered.fastq.gz"),
+        filtered_unpaired_read = os.path.join(input_dir, "{sample}/{sample}_SE.processed.filtered.fastq.gz")
     output:
         assembly_fasta="{sample}/megahit_assembly/final.contigs.fa",
     resources: 
@@ -18,11 +18,11 @@ rule megahit:
        """
         ARGS=""
         if [ -s {params.preset} ]; then
-            ARGS="--preset {input.custom_db}"
+            ARGS="--preset {params.preset}"
         fi
-
+       
        rm -rf {wildcards.sample}/megahit_assembly
-
+       
        megahit -1 {input.filtered_paired_read_1} -2 {input.filtered_paired_read_2} \
        -r {input.filtered_unpaired_read} \
        -o {wildcards.sample}/megahit_assembly \

@@ -113,7 +113,7 @@ rule bwa_index_assembly:
     resources:
         mem_gb = 100000
     threads: 6
-    conda: "../../../envs/bwa_env.yml"
+    conda: "../../envs/bwa_env.yml"
     benchmark: "{sample}/benchmarks/bwa_indexing.txt"
     log: "{sample}/logs/bwa_indexing.log"
     shell:
@@ -144,7 +144,7 @@ rule bwa_mg_mapping_on_assembly:
         memory = 250
     threads: 24 
     group: "bwa_mapping_on_assembly"
-    conda: "../../../envs/bwa_env.yml"
+    conda: "../../envs/bwa_env.yml"
     benchmark: "{sample}/benchmarks/bwa_mapping.txt"
     log: "{sample}/logs/bwa_mapping.log"
     shell:

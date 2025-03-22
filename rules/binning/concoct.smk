@@ -8,7 +8,7 @@ rule concoct_cut_contigs:
         split_contigs_bed = "{sample}/concoct/split_contigs_len-%s.bed" % config["concoct"]["contig_split_length"]
     params:
         contig_split_length = config["concoct"]["contig_split_length"]
-    conda: "../../../envs/concoct_env.yml"
+    conda: "../../envs/concoct_env.yml"
     shadow: "shallow"
     benchmark: os.path.join("{sample}/benchmarks/concoct_cut_contigs.txt")
     log: os.path.join("{sample}/logs/concoct_cut_contigs.txt")
@@ -26,7 +26,7 @@ rule concoct_coverage_table:
         coverage_table = "{sample}/concoct/split_contigs_len-%s_coverage_table.tsv" % config["concoct"]["contig_split_length"]
     params:
         contig_split_length = config["concoct"]["contig_split_length"]
-    conda: "../../../envs/concoct_env.yml"
+    conda: "../../envs/concoct_env.yml"
     shadow: "shallow"
     benchmark: os.path.join("{sample}/benchmarks/concoct_coverage_table.txt")
     log: os.path.join("{sample}/logs/concoct_coverage_table.txt")
@@ -44,7 +44,7 @@ rule concoct:
     params:
         threads = config["concoct"]["threads"],
         contig_min_length = config["binning"]["min_contig_length"]
-    conda: "../../../envs/concoct_env.yml"
+    conda: "../../envs/concoct_env.yml"
     shadow: "shallow"
     benchmark: os.path.join("{sample}/benchmarks/concoct.txt")
     log: os.path.join("{sample}/logs/concoct.txt")
@@ -62,7 +62,7 @@ rule concoct_merge_clusters:
     output:
         merged_table = "{sample}/concoct/bins/clustering_merged.csv",
         bin_dir = directory("{sample}/concoct/bins")
-    conda: "../../../envs/concoct_env.yml"
+    conda: "../../envs/concoct_env.yml"
     shadow: "shallow"
     benchmark: os.path.join("{sample}/benchmarks/concoct_merge_clusters.txt")
     log: os.path.join("{sample}/logs/concoct_merge_clusters.txt")

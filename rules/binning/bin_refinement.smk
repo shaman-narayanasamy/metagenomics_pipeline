@@ -6,7 +6,7 @@ rule magscot_bin_refinement:
         outdir = directory("{sample}/magscot"), 
         binning_results="{sample}/magscot/MAGScoT.refined.contig_to_bin.out"
     params: magscot_folder = config["magscot"]["folder"]
-    conda: "../../../envs/magscot_env.yml"
+    conda: "../../envs/magscot_env.yml"
     benchmark: "{sample}/benchmarks/binning_magscot.txt"
     log: "{sample}/logs/binning_magscot.txt"
     shell: 

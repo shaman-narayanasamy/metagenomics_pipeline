@@ -13,7 +13,7 @@ rule magscot_marker_genes:
     params: 
         magscot_folder = config["magscot"]["folder"]
     threads: 12
-    conda: "../../../envs/magscot_env.yml"
+    conda: "../../envs/magscot_env.yml"
     benchmark: "{sample}/benchmarks/binning_marker_genes.txt"
     log: "{sample}/logs/binning_marker_genes.txt"
     shell: 

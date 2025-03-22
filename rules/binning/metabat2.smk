@@ -4,7 +4,7 @@ rule get_depth_of_coverage:
         bai = "{sample}/{sample}_metaG.reads.sorted.bam.bai"
     output:
         depth_file = "{sample}/contig_depth.txt",
-    conda: "../../../envs/metabat2_env.yml"
+    conda: "../../envs/metabat2_env.yml"
     shadow: "shallow"
     benchmark: "{sample}/benchmarks/jgi_summarize_bam_contig_depths.txt"
     log: "{sample}/logs/jgi_summarize_bam_contig_depths.txt"
@@ -29,7 +29,7 @@ rule metabat2:
         prefix = '{sample}/metabat2/metabat_bin',
         reordered_depth_file = '{sample}/metabat2/contig_depth.txt'
     shadow: "shallow"
-    conda: "../../../envs/metabat2_env.yml"
+    conda: "../../envs/metabat2_env.yml"
     benchmark: "{sample}/benchmarks/metabat2.txt"
     log: "{sample}/logs/metabat2.txt"
     shell:

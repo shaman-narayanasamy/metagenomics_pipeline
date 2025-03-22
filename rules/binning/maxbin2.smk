@@ -9,7 +9,7 @@ rule maxbin2:
     params:
         threads = config["maxbin2"]["threads"],
         min_contig_length = config["binning"]["min_contig_length"]
-    conda: "../../../envs/maxbin2_env.yml"
+    conda: "../../envs/maxbin2_env.yml"
     benchmark: os.path.join("{sample}/benchmarks/maxbin2.txt")
     log: os.path.join("{sample}/logs/maxbin2.txt")
     shell:

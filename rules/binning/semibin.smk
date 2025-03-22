@@ -12,7 +12,7 @@ rule semibin:
         threads = config["semibin"]["threads"],
         min_contig_length = config["binning"]["min_contig_length"],
         environment_type = config["semibin"]["environment_type"]
-    conda: "../../../envs/semibin2_env.yml"
+    conda: "../../envs/semibin2_env.yml"
     benchmark: "{sample}/benchmarks/semibin2.txt"
     log: "{sample}/logs/semibin2.txt"
     shell:
