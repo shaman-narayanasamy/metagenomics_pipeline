@@ -54,7 +54,7 @@ sortmerna_human_single:
 
 megahit:
     nodes: 1
-    ncpus: 24
+    ncpus: 40
     mem_gb: "250GB"
     time: "120:00:00"
 

@@ -8,8 +8,9 @@ rule bwa_index_assembly:
         "{sample}/megahit_assembly/final.contigs.fa.ann",
         "{sample}/megahit_assembly/final.contigs.fa.sa"
     resources:
-        mem_mb = 100000
-    threads: 6
+        cpus_per_task=6,
+        mem="250GB",
+        runtime=7200
     conda: "../../../envs/bwa_env.yml"
     benchmark: os.path.join(output_dir, "{sample}/benchmarks/bwa_indexing.txt")
     log: os.path.join(output_dir, "{sample}/logs/bwa_indexing.txt")
@@ -20,9 +21,9 @@ rule bwa_index_assembly:
 
 rule bwa_mapping_on_assembly:
     input:
-        r_1 = os.path.join(input_dir, "{sample}/{sample}_R1.processed.fastq.gz"),
-        r_2 = os.path.join(input_dir, "{sample}/{sample}_R2.processed.fastq.gz"),
-        r_se = os.path.join(input_dir, "{sample}/{sample}_SE.processed.fastq.gz"),
+        r_1 = os.path.join(input_dir, "{sample}/{sample}_R1.processed.filtered.fastq.gz"),
+        r_2 = os.path.join(input_dir, "{sample}/{sample}_R2.processed.filtered.fastq.gz"),
+        r_se = os.path.join(input_dir, "{sample}/{sample}_SE.processed.filtered.fastq.gz"),
         assembly="{sample}/megahit_assembly/final.contigs.fa",
         assembly_amb="{sample}/megahit_assembly/final.contigs.fa.amb",
         assembly_bwt="{sample}/megahit_assembly/final.contigs.fa.bwt",
@@ -33,9 +34,10 @@ rule bwa_mapping_on_assembly:
         '{sample}/{sample}.reads.sorted.bam'
     params: 
         prefix = "{sample}/{sample}.reads",
-        memory = 250
     resources:
-        memory = 250
+        cpus_per_task=24,
+        mem="250GB",
+        runtime=7200
     threads: 24 
     conda: "../../../envs/bwa_env.yml"
     benchmark: os.path.join(output_dir, "{sample}/benchmarks/bwa_mapping.txt")
@@ -46,7 +48,7 @@ rule bwa_mapping_on_assembly:
 
         PREFIX={params.prefix}
         
-        MEM_PER_CORE=$(({params.memory}/{threads}))
+        MEM_PER_CORE=$(($(echo {resources.memory} | sed -e 's/GB//')/{threads}))
 
         # merge paired and se
         samtools merge --threads {threads} -f $PREFIX.merged.bam \
@@ -65,6 +67,10 @@ rule index_assembly_bam:
         '{sample}/{sample}.reads.sorted.bam'
     output:
         '{sample}/{sample}.reads.sorted.bam.bai'
+    resources:
+        cpus_per_task=12,
+        mem="120GB",
+        runtime=7200
     conda: "../../../envs/bwa_env.yml"
     benchmark: os.path.join(output_dir, "{sample}/benchmarks/index_bam.txt")
     log: os.path.join(output_dir, "{sample}/logs/index_bam.txt")
@@ -78,6 +84,10 @@ rule flagstat_assembly_bam:
         '{sample}/{sample}.reads.sorted.bam',
     output:
         '{sample}/{sample}.reads.sorted.flagstat.txt'
+    resources:
+        cpus_per_task=12,
+        mem="120GB",
+        runtime=7200
     conda: "../../../envs/bwa_env.yml"
     benchmark: os.path.join(output_dir, "{sample}/benchmarks/flagstat.txt")
     log: os.path.join(output_dir, "{sample}/logs/flagstat.txt")
