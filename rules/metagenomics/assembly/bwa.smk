@@ -48,7 +48,7 @@ rule bwa_mapping_on_assembly:
 
         PREFIX={params.prefix}
         
-        MEM_PER_CORE=$(($(echo {resources.memory} | sed -e 's/GB//')/{threads}))
+        MEM_PER_CORE=$(($(echo {resources.mem} | sed -e 's/GB//')/{threads}))
 
         # merge paired and se
         samtools merge --threads {threads} -f $PREFIX.merged.bam \
