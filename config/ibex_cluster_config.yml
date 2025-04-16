@@ -199,8 +199,8 @@ coverm_genomes:
 
 semibin_multi_sample_get_abundance:
     nodes: 1
-    ncpus: 24
-    mem_gb: "250GB"
+    ncpus: 40
+    mem_gb: "500GB"
     time: "120:00:00"
 
 semibin_multi_sample_split_contigs:

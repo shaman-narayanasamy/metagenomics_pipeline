@@ -17,8 +17,14 @@ workdir:
 include:
     '../../rules/metagenomics/preprocessing/trimmomatic.smk'
 
+if "sortmerna" in config:
+    include: "../../rules/metagenomics/preprocessing/sortmerna_filter.smk"  
+    include: "../../rules/metagenomics/preprocessing/sortmerna_index.smk"  
+else:
+    include: "../../rules/metagenomics/preprocessing/softlink.smk"
+
 rule all:
      input:
-        expand("{sample}/{sample}_SE.processed.fastq.gz", sample = samples.index), 
-        expand("{sample}/{sample}_R1.processed.fastq.gz", sample = samples.index),
-        expand("{sample}/{sample}_R2.processed.fastq.gz", sample = samples.index)
+        expand("{sample}/{sample}_SE.processed.filtered.fastq.gz", sample = samples.index), 
+        expand("{sample}/{sample}_R1.processed.filtered.fastq.gz", sample = samples.index),
+        expand("{sample}/{sample}_R2.processed.filtered.fastq.gz", sample = samples.index)
