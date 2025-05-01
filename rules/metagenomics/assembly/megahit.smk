@@ -10,16 +10,23 @@ rule megahit:
         mem="250GB",
         runtime=7200
     params: 
-        preset = config['megahit']['preset']
+        preset = config.get('megahit', {}).get('preset', ''),
+        mem_flag = config.get('megahit', {}).get('mem_flag', '')
     threads: 40 
     conda: "../../../envs/megahit_env.yml"
     benchmark: os.path.join(output_dir, "{sample}/benchmarks/assembly.txt")
     log: os.path.join(output_dir, "{sample}/logs/assembly.txt")
     shell:
        """
-       ARGS=""
-       if [ -s {params.preset} ]; then
-            ARGS="--presets {params.preset}"
+       PRESET=""
+       if [ "{params.preset}" != "" ]; then
+
+            PRESET="--presets {params.preset}"
+       fi
+
+       MEM_FLAG=""
+       if [ "{params.mem_flag}" != "" ]; then
+           MEM_FLAG="--mem-flag {params.mem_flag}"
        fi
 
        MEMORY_BYTES=$(($(echo {resources.mem} | sed -e s/GB//g) * 1000 * 1000 * 1000))
@@ -33,8 +40,7 @@ rule megahit:
        -r {input.filtered_unpaired_read} \
        -o {wildcards.sample}/megahit_assembly \
        -m $MEMORY_BYTES \
-       $ARGS \
-       --mem-flag 2
+       $PRESET $MEM_FLAG
        """ 
 
 rule rename_contigs:

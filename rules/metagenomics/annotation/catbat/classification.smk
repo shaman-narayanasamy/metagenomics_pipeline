@@ -44,8 +44,6 @@ rule catbat_summary:
         catpack_script=config['catbat']['catpack_script']
     conda: 
         "../../../../envs/catbat_env.yml"
-    container:
-        "/ibex/user/naras0c/singularity/catbat/catbat.simg"
     benchmark: "catbat/benchmarks/{db_name}_catbat_summary.txt"
     log: "catbat/logs/{db_name}_catbat_summary.txt"
     shell: 

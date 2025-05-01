@@ -100,11 +100,19 @@ crisprcasfinder:
     mem_gb: "120GB"
     time: "14-0:00:00"
 
-coverm:
+coverm_contigs:
     nodes: 1
     ncpus: 24
     mem_gb: "120GB"
     time: "5-0:00:00"
+
+bedtools_gene_coverage:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "96GB"
+    time: "5-0:00:00"
+
+
 
 catbat_classification:
     nodes: 1
@@ -226,3 +234,10 @@ mmseqs2:
     ncpu: 24
     mem_gb: "250GB" 
     time: "8-0:00:00"
+
+bwa_mapping_catalogue:
+    nodes: 1
+    ncpus: 24
+    mem_gb: "250GB"
+    time: "72:00:00"
+
